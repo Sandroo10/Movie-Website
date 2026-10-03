@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { featuredMoviesOptions } from '@/features/home/api/featured-movies'
 import { HomeHero } from '@/features/home/hero/HomeHero'
 import { HeroState } from '@/features/home/states/HeroState'
+import { NowPlayingSection } from '@/features/home/sections/now-playing/NowPlayingSection'
 
 export function HomePage() {
   const movies = useQuery(featuredMoviesOptions)
@@ -17,6 +18,7 @@ export function HomePage() {
       ) : (
         <HomeHero movies={movies.data} />
       )}
+      <NowPlayingSection />
     </main>
   )
 }

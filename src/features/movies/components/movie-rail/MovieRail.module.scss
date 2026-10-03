@@ -1,0 +1,29 @@
+.rail {
+  position: relative;
+  min-width: 0;
+}
+.viewport {
+  overflow: hidden;
+}
+.track {
+  display: flex;
+  gap: 17px;
+  touch-action: pan-y pinch-zoom;
+}
+.slide {
+  flex: 0 0 260px;
+  min-width: 0;
+}
+.edgeFade {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 73px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--color-background));
+}
+
+@media (max-width: 650px) {
+  .edgeFade {
+    width: 32px;
+  }
+}
