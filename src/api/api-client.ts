@@ -1,12 +1,15 @@
 import { ApiError } from '@/api/api-error'
 
-const DEFAULT_API_BASE_URL = 'https://api.kinoxii.redberryinternship.ge/api'
-
 function getApiUrl(path: string): URL {
   const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim()
-  const baseUrlValue = configuredBaseUrl || DEFAULT_API_BASE_URL
 
-  const baseUrl = baseUrlValue.endsWith('/') ? baseUrlValue : `${baseUrlValue}/`
+  if (!configuredBaseUrl) {
+    throw new ApiError('The API base URL is not configured.', {
+      kind: 'configuration',
+    })
+  }
+
+  const baseUrl = configuredBaseUrl.endsWith('/') ? configuredBaseUrl : `${configuredBaseUrl}/`
 
   try {
     return new URL(path.replace(/^\/+/, ''), baseUrl)
