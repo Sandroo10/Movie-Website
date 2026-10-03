@@ -1,11 +1,6 @@
 import '@/App.css'
+import { AppRouter } from '@/app/AppRouter'
 
-function App() {
-  return (
-    <main className="app-shell">
-      <h1>Movie Website</h1>
-    </main>
-  )
+export default function App() {
+  return <AppRouter />
 }
-
-export default App
