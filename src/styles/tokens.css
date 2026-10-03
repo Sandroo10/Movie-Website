@@ -2,7 +2,7 @@
   color-scheme: dark;
 
   /* Core colors sampled visually from the supplied Figma board. */
-  --color-background: #080a1b;
+  --color-background: #070c1c;
   --color-surface: #111327;
   --color-surface-raised: #1b1d31;
   --color-surface-input: #25273a;
@@ -12,13 +12,13 @@
   --color-text-secondary: #b5b7c5;
   --color-text-muted: #87899a;
 
-  --color-accent: #f43d1d;
-  --color-accent-hover: #e23217;
+  --color-accent: #ec3013;
+  --color-accent-hover: #d5270c;
   --color-success: #4fbd8f;
   --color-error: #f4584d;
   --color-overlay: rgb(5 7 18 / 78%);
 
-  --font-family-sans: Inter, 'Segoe UI', Arial, sans-serif;
+  --font-family-sans: 'Archivo Variable', Arial, sans-serif;
 
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
