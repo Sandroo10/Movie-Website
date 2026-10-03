@@ -1,7 +1,3 @@
-#root {
-  min-height: 100vh;
-}
-
 .app-shell {
   min-height: 100vh;
   display: grid;

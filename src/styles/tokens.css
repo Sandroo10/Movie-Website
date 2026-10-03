@@ -1,0 +1,58 @@
+:root {
+  color-scheme: dark;
+
+  /* Core colors sampled visually from the supplied Figma board. */
+  --color-background: #080a1b;
+  --color-surface: #111327;
+  --color-surface-raised: #1b1d31;
+  --color-surface-input: #25273a;
+  --color-border: #303247;
+
+  --color-text-primary: #f5f5f7;
+  --color-text-secondary: #b5b7c5;
+  --color-text-muted: #87899a;
+
+  --color-accent: #f43d1d;
+  --color-accent-hover: #e23217;
+  --color-success: #4fbd8f;
+  --color-error: #f4584d;
+  --color-overlay: rgb(5 7 18 / 78%);
+
+  --font-family-sans: Inter, 'Segoe UI', Arial, sans-serif;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+  --font-size-display: clamp(3rem, 4vw, 4.5rem);
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.1;
+  --line-height-heading: 1.2;
+  --line-height-body: 1.5;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-pill: 999px;
+
+  --shadow-overlay: 0 1rem 3rem rgb(0 0 0 / 35%);
+}
