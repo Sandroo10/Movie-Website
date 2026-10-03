@@ -1,0 +1,125 @@
+.content {
+  position: absolute;
+  left: 67px;
+  bottom: 179px;
+  width: 580px;
+  max-width: calc(100% - 134px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  animation: copy-in 450ms ease;
+  h1 {
+    color: inherit;
+    font-size: 40px;
+    font-weight: 800;
+    line-height: normal;
+    text-transform: uppercase;
+  }
+}
+.premiere {
+  padding: 6px 10px;
+  color: var(--color-accent);
+  background: rgb(236 48 19 / 10%);
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+.badge,
+.age {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  background: rgb(255 255 255 / 10%);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+}
+.age {
+  color: var(--color-accent);
+  background: rgb(236 48 19 / 10%);
+}
+.synopsis {
+  width: 560px;
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1.3;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+.buyTickets,
+.allSessions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 13px 22px;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 10%);
+  color: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: normal;
+  text-decoration: none;
+}
+.buyTickets {
+  background: var(--color-accent);
+}
+@keyframes copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 1000px) {
+  .content {
+    left: 32px;
+    max-width: calc(100% - 64px);
+  }
+}
+@media (max-width: 650px) {
+  .content {
+    left: 24px;
+    width: calc(100% - 48px);
+    max-width: none;
+    bottom: 135px;
+    gap: 12px;
+    h1 {
+      font-size: 32px;
+    }
+  }
+  .synopsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .badges {
+    gap: 6px;
+  }
+  .badge,
+  .age {
+    padding: 6px 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    animation: none;
+  }
+}

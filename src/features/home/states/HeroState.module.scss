@@ -1,0 +1,18 @@
+.state {
+  min-height: 760px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 160px 24px 80px;
+
+  button {
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    padding: 13px 22px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+}
