@@ -1,0 +1,121 @@
+.card {
+  width: 470px;
+  height: 160px;
+  padding: 12px;
+  border-radius: 20px;
+  background: #1e2031;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+}
+.poster {
+  flex: 1;
+  min-width: 0;
+  height: 136px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--color-surface-raised);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 12px;
+  color: #a9a9a9;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+.copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex: 0 0 203px;
+  min-width: 0;
+  height: 132px;
+  padding-right: 30px;
+}
+.details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+}
+.release {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+.title {
+  max-width: 100%;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
+}
+.metadata {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #a9a9a9;
+}
+.age {
+  padding: 4px 7px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  background: rgb(236 48 19 / 10%);
+  color: var(--color-accent);
+}
+.notify {
+  border: 1px solid #a9a9a9;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  &:hover:not(:disabled) {
+    background: rgb(255 255 255 / 10%);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+.message {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #a9a9a9;
+}
+@media (max-width: 650px) {
+  .card {
+    width: 360px;
+  }
+  .copy {
+    flex-basis: 198px;
+    padding-right: 20px;
+  }
+}

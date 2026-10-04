@@ -22,7 +22,19 @@
   background: linear-gradient(90deg, transparent, var(--color-background));
 }
 
+.upcoming {
+  .track {
+    gap: 20px;
+  }
+  .slide {
+    flex-basis: 470px;
+  }
+}
+
 @media (max-width: 650px) {
+  .upcoming .slide {
+    flex-basis: 360px;
+  }
   .edgeFade {
     width: 32px;
   }

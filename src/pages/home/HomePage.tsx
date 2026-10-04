@@ -3,6 +3,7 @@ import { featuredMoviesOptions } from '@/features/home/api/featured-movies'
 import { HomeHero } from '@/features/home/hero/HomeHero'
 import { HeroState } from '@/features/home/states/HeroState'
 import { NowPlayingSection } from '@/features/home/sections/now-playing/NowPlayingSection'
+import { ComingSoonSection } from '@/features/home/sections/coming-soon/ComingSoonSection'
 
 export function HomePage() {
   const movies = useQuery(featuredMoviesOptions)
@@ -19,6 +20,7 @@ export function HomePage() {
         <HomeHero movies={movies.data} />
       )}
       <NowPlayingSection />
+      <ComingSoonSection />
     </main>
   )
 }

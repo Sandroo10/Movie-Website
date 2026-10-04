@@ -2,11 +2,19 @@ import { Children, type ReactNode } from 'react'
 import { useMovieRail } from './hooks/useMovieRail'
 import styles from './MovieRail.module.scss'
 
-export function MovieRail({ label, children }: { label: string; children: ReactNode }) {
+export function MovieRail({
+  label,
+  children,
+  variant = 'standard',
+}: {
+  label: string
+  children: ReactNode
+  variant?: 'standard' | 'upcoming'
+}) {
   const { viewportRef, carousel, canScrollNext } = useMovieRail()
 
   return (
-    <div className={styles.rail}>
+    <div className={`${styles.rail} ${variant === 'upcoming' ? styles.upcoming : ''}`}>
       <div
         className={styles.viewport}
         ref={viewportRef}
