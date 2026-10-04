@@ -1,0 +1,83 @@
+.dialog {
+  width: 405px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 32px;
+  border: 1px solid #2a2c3d;
+  border-radius: 28px;
+  background: #070c1c;
+  color: #fff;
+  box-shadow: 0 20px 50px -10px rgb(0 0 0 / 20%);
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+  transition:
+    opacity 200ms ease,
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 240ms ease,
+    display 240ms allow-discrete,
+    overlay 240ms allow-discrete;
+  &[open] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  &::backdrop {
+    background: rgb(16 16 16 / 30%);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition:
+      opacity 200ms ease,
+      display 240ms allow-discrete,
+      overlay 240ms allow-discrete;
+  }
+  &[open]::backdrop {
+    opacity: 1;
+  }
+}
+@starting-style {
+  .dialog[open] {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  .dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog,
+  .dialog::backdrop {
+    transition: none;
+    transform: none;
+  }
+}
+.register {
+  width: 475px;
+  &::backdrop {
+    background: rgb(36 36 36 / 30%);
+  }
+}
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  h2 {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: normal;
+  }
+  p {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.3;
+    color: #a9a9a9;
+  }
+  button {
+    display: flex;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+}

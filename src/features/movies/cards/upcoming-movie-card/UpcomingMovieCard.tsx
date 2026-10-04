@@ -2,15 +2,17 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import type { Movie } from '@/features/movies/model/movie.types'
 import { useMovieNotification } from '@/features/movies/hooks/useMovieNotification'
+import { useAuth } from '@/features/auth/session/auth-context'
 import styles from './UpcomingMovieCard.module.scss'
 
 export function UpcomingMovieCard({ movie }: { movie: Movie }) {
   const [failedPoster, setFailedPoster] = useState<string | null>(null)
   const notification = useMovieNotification(movie.slug)
+  const { token } = useAuth()
   const release = new Date(`${movie.releaseDate}T12:00:00`)
     .toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
     .toUpperCase()
-  const subscribed = movie.isNotified || notification.subscribed
+  const subscribed = Boolean(token && (movie.isNotified || notification.subscribed))
   const movieUrl = `/movies/${movie.slug}`
 
   return (

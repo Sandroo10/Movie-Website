@@ -4,10 +4,12 @@ import { comingSoonMoviesOptions } from '@/features/home/api/coming-soon-movies'
 import { CatalogueState } from '@/features/home/states/catalogue/CatalogueState'
 import { UpcomingMovieCard } from '@/features/movies/cards/upcoming-movie-card/UpcomingMovieCard'
 import { MovieRail } from '@/features/movies/components/movie-rail/MovieRail'
+import { useAuth } from '@/features/auth/session/auth-context'
 import styles from './ComingSoonSection.module.scss'
 
 export function ComingSoonSection() {
-  const movies = useQuery(comingSoonMoviesOptions)
+  const { token, revision } = useAuth()
+  const movies = useQuery(comingSoonMoviesOptions(token, revision))
 
   return (
     <section className={styles.section} aria-labelledby="coming-soon-heading">

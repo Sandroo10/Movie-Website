@@ -1,0 +1,35 @@
+.section {
+  margin-top: 32px;
+  padding: 9px 0 40px;
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+  color: #fff;
+}
+.content {
+  padding: 0 70px;
+  h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: normal;
+  }
+}
+.empty {
+  min-height: 87px;
+  display: flex;
+  align-items: center;
+  color: #a9a9a9;
+  font-size: 14px;
+}
+@media (max-width: 1000px) {
+  .content {
+    padding: 0 32px;
+  }
+}
+@media (max-width: 650px) {
+  .content {
+    padding: 0 24px;
+    h2 {
+      font-size: 20px;
+    }
+  }
+}

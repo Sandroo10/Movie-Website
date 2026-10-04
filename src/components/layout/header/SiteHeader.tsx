@@ -1,4 +1,6 @@
 import { Link } from 'react-router'
+import { AccountNavigation } from '@/features/auth/navigation/AccountNavigation'
+import { MovieSearch } from '@/features/search/search-box/MovieSearch'
 import styles from './SiteHeader.module.scss'
 
 export function SiteHeader() {
@@ -15,20 +17,8 @@ export function SiteHeader() {
       </nav>
 
       <div className={styles.actions}>
-        <div className={styles.searchArea} role="search">
-          <label className={styles.search}>
-            <img src="/assets/kino/search.svg" alt="" width="14" height="14" />
-            <input type="search" aria-label="Search movies" placeholder="Search" />
-          </label>
-        </div>
-        <div className={styles.authActions}>
-          <button className={styles.signUp} type="button">
-            Sign up
-          </button>
-          <button className={styles.logIn} type="button">
-            Log in
-          </button>
-        </div>
+        <MovieSearch />
+        <AccountNavigation />
       </div>
     </header>
   )

@@ -9,12 +9,12 @@ export function MovieRail({
 }: {
   label: string
   children: ReactNode
-  variant?: 'standard' | 'upcoming'
+  variant?: 'standard' | 'upcoming' | 'recent'
 }) {
   const { viewportRef, carousel, canScrollNext } = useMovieRail()
 
   return (
-    <div className={`${styles.rail} ${variant === 'upcoming' ? styles.upcoming : ''}`}>
+    <div className={`${styles.rail} ${variant === 'standard' ? '' : styles[variant]}`}>
       <div
         className={styles.viewport}
         ref={viewportRef}

@@ -4,9 +4,12 @@ import { HomeHero } from '@/features/home/hero/HomeHero'
 import { HeroState } from '@/features/home/states/HeroState'
 import { NowPlayingSection } from '@/features/home/sections/now-playing/NowPlayingSection'
 import { ComingSoonSection } from '@/features/home/sections/coming-soon/ComingSoonSection'
+import { RecentlyViewedSection } from '@/features/home/sections/recently-viewed/RecentlyViewedSection'
+import { useAuth } from '@/features/auth/session/auth-context'
 
 export function HomePage() {
   const movies = useQuery(featuredMoviesOptions)
+  const { user } = useAuth()
 
   return (
     <main>
@@ -19,7 +22,8 @@ export function HomePage() {
       ) : (
         <HomeHero movies={movies.data} />
       )}
-      <NowPlayingSection />
+      {user && <RecentlyViewedSection userId={user.id} />}
+      <NowPlayingSection afterRecent={Boolean(user)} />
       <ComingSoonSection />
     </main>
   )

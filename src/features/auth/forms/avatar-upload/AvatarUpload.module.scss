@@ -1,0 +1,75 @@
+.upload {
+  position: relative;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  button {
+    border: 0;
+    padding: 0;
+    background: none;
+    color: #a9a9a9;
+    font-size: 12px;
+    cursor: pointer;
+  }
+}
+.picker {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+}
+.thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 0.5px dashed #2a2c3d;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 10%);
+  overflow: hidden;
+}
+.preview {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+.copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  strong {
+    font-size: 14px;
+    font-weight: 800;
+    line-height: normal;
+  }
+  span {
+    font-size: 12px;
+    line-height: 1.3;
+    color: #a9a9a9;
+  }
+}
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+.upload:focus-within .thumbnail {
+  outline: 2px solid #ec3013;
+  outline-offset: 3px;
+}
+.error {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #ec3013;
+}

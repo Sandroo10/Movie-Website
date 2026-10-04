@@ -13,12 +13,15 @@
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
+    "@hookform/resolvers": "^5.9.1",
     "@tanstack/react-query": "^5.104.1",
     "embla-carousel-react": "^8.6.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-hook-form": "^7.89.0",
     "react-router": "^8.4.0",
-    "sass": "^1.105.1"
+    "sass": "^1.105.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

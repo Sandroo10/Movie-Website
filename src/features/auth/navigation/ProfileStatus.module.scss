@@ -1,0 +1,27 @@
+.profileStatus {
+  margin: 16px 20px 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  strong {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: normal;
+  }
+  p {
+    font-size: 12px;
+    line-height: 1.3;
+    color: #a9a9a9;
+    margin-top: 2px;
+  }
+}
+.complete {
+  background: rgb(74 222 128 / 10%);
+  color: #4ade80;
+}
+.incomplete {
+  background: rgb(226 126 4 / 10%);
+  color: #e27e04;
+}

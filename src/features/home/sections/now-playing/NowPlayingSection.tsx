@@ -6,11 +6,14 @@ import { MovieRail } from '@/features/movies/components/movie-rail/MovieRail'
 import { CatalogueState } from '@/features/home/states/catalogue/CatalogueState'
 import styles from './NowPlayingSection.module.scss'
 
-export function NowPlayingSection() {
+export function NowPlayingSection({ afterRecent = false }: { afterRecent?: boolean }) {
   const movies = useQuery(nowPlayingMoviesOptions)
 
   return (
-    <section className={styles.section} aria-labelledby="now-playing-heading">
+    <section
+      className={`${styles.section} ${afterRecent ? styles.afterRecent : ''}`}
+      aria-labelledby="now-playing-heading"
+    >
       <div className={styles.heading}>
         <h2 id="now-playing-heading">NOW PLAYING</h2>
         <Link to="/sessions">See all</Link>
