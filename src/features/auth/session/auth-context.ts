@@ -11,6 +11,7 @@ export const AuthContext = createContext<{
   openRegister: () => void
   expireSession: (action?: ProtectedAction) => void
   authenticate: (user: User, token: string) => void
+  updateUser: (user: User) => void
   logout: () => Promise<void>
   retrySession: () => void
 } | null>(null)

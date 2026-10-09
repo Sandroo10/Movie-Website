@@ -31,9 +31,17 @@
     color: #a9a9a9;
     opacity: 1;
   }
+  input[readonly] {
+    color: #a9a9a9;
+  }
   &:focus-within {
     border-color: #a9a9a9;
   }
+}
+.hint {
+  margin-top: -2px;
+  color: #a9a9a9;
+  font-size: 12px;
 }
 .feedback {
   display: flex;

@@ -34,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     persistToken(null)
     queryClient.removeQueries({ queryKey: ['auth'] })
     queryClient.removeQueries({ queryKey: ['movie-notification'] })
+    queryClient.removeQueries({ queryKey: ['profile'] })
     void queryClient.invalidateQueries({ queryKey: ['catalogue'] })
     setSession((current) => ({ token: null, revision: current.revision + 1 }))
   }, [queryClient])
@@ -101,6 +102,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
         expireSession,
         authenticate,
+        updateUser: (user) => {
+          queryClient.setQueriesData<User>({ queryKey: ['auth', 'session'] }, (current) =>
+            current?.id === user.id ? user : current,
+          )
+        },
         logout,
         retrySession: () => {
           void currentUser.refetch()
