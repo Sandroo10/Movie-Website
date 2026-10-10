@@ -1,0 +1,89 @@
+.hero {
+  height: 760px;
+  position: relative;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+.heroContent {
+  position: absolute;
+  left: 67px;
+  bottom: 179px;
+  width: 580px;
+  max-width: calc(100% - 134px);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.row,
+.controls {
+  display: flex;
+  gap: 10px;
+}
+.controls {
+  position: absolute;
+  right: 70px;
+  bottom: 70px;
+  align-items: center;
+}
+.rail {
+  display: flex;
+  gap: 17px;
+  overflow: hidden;
+}
+.card {
+  flex: 0 0 260px;
+  height: 452px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 20px;
+  background: #1e2031;
+}
+.copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  flex: 1;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.upcoming {
+  flex: 0 0 470px;
+  height: 160px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 203px;
+  gap: 15px;
+  padding: 12px;
+  background: #1e2031;
+  border-radius: 20px;
+}
+@media (max-width: 1000px) {
+  .heroContent {
+    left: 32px;
+    max-width: calc(100% - 64px);
+  }
+}
+@media (max-width: 650px) {
+  .hero {
+    height: 700px;
+  }
+  .heroContent {
+    left: 24px;
+    max-width: calc(100% - 48px);
+    bottom: 135px;
+  }
+  .controls {
+    right: 24px;
+    bottom: 50px;
+  }
+  .upcoming {
+    flex-basis: 360px;
+    grid-template-columns: minmax(0, 1fr) 198px;
+  }
+}

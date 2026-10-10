@@ -73,9 +73,38 @@
   font-weight: 800;
   line-height: normal;
   text-decoration: none;
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease;
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+  &:active {
+    transform: translateY(0);
+  }
 }
 .buyTickets {
   background: var(--color-accent);
+}
+@media (hover: hover) and (pointer: fine) {
+  .buyTickets:hover {
+    background: var(--color-accent-hover);
+    box-shadow: 0 6px 20px rgb(236 48 19 / 30%);
+    transform: translateY(-2px);
+  }
+  .allSessions:hover {
+    color: var(--color-accent);
+    background: rgb(236 48 19 / 14%);
+    box-shadow: inset 0 0 0 1px rgb(236 48 19 / 40%);
+    transform: translateY(-2px);
+  }
+  .buyTickets:active,
+  .allSessions:active {
+    transform: translateY(0);
+  }
 }
 @keyframes copy-in {
   from {
@@ -121,5 +150,13 @@
 @media (prefers-reduced-motion: reduce) {
   .content {
     animation: none;
+  }
+  .buyTickets,
+  .allSessions {
+    transition: none;
+    transform: none;
+    &:hover {
+      transform: none;
+    }
   }
 }

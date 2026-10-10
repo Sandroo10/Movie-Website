@@ -1,3 +1,5 @@
+@use '../../../../styles/card-motion' as motion;
+
 .posterFallback {
   width: 87px;
   height: 67px;
@@ -8,6 +10,7 @@
   color: var(--color-text-secondary);
 }
 .recentCard {
+  @include motion.hover(3px);
   width: 329px;
   min-width: 329px;
   height: 87px;

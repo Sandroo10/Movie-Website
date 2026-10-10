@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { User } from '@/features/auth/model/auth.types'
 import { FormField } from '@/components/ui/form-field/FormField'
@@ -9,6 +9,7 @@ import { profileValues } from '../model/profile-values'
 import { useProfileSave } from '../hooks/useProfileSave'
 import { DateOfBirthField } from './DateOfBirthField'
 import { VenueField } from './VenueField'
+import { Skeleton, SkeletonGroup } from '@/components/ui/skeleton/Skeleton'
 import styles from './PersonalInformation.module.scss'
 
 export function PersonalInformation({ user }: { user: User }) {
@@ -112,13 +113,25 @@ export function PersonalInformation({ user }: { user: User }) {
           valid={valid('dateOfBirth')}
           {...register('dateOfBirth', { onChange: () => edited('dateOfBirth') })}
         />
-        <VenueField
-          venues={options.data?.venues ?? []}
-          pending={options.isPending}
-          error={options.error}
-          onRetry={() => void options.refetch()}
-          disabled={pending}
-          {...register('preferredVenueId', { onChange: () => edited('preferredVenueId') })}
+        <Controller
+          name="preferredVenueId"
+          control={control}
+          render={({ field }) => (
+            <VenueField
+              ref={field.ref}
+              value={field.value}
+              onBlur={field.onBlur}
+              onChange={(value) => {
+                field.onChange(value)
+                edited('preferredVenueId')
+              }}
+              venues={options.data?.venues ?? []}
+              pending={options.isPending}
+              error={options.error}
+              onRetry={() => void options.refetch()}
+              disabled={pending}
+            />
+          )}
         />
         {errors.preferredVenueId && (
           <p className={styles.error} role="alert">
@@ -133,6 +146,11 @@ export function PersonalInformation({ user }: { user: User }) {
             ? `You cannot buy tickets for ${blockedRatings.join(' or ')} titles.`
             : 'You can buy tickets for all age ratings.'}
         </p>
+      )}
+      {user.age != null && options.isPending && (
+        <SkeletonGroup label="Loading age rating information">
+          <Skeleton width={300} height={12} />
+        </SkeletonGroup>
       )}
       {message && (
         <p className={styles.error} role="alert">

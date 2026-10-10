@@ -4,6 +4,7 @@ import { nowPlayingMoviesOptions } from '@/features/home/api/now-playing-movies'
 import { MovieCard } from '@/features/movies/cards/movie-card/MovieCard'
 import { MovieRail } from '@/features/movies/components/movie-rail/MovieRail'
 import { CatalogueState } from '@/features/home/states/catalogue/CatalogueState'
+import { CatalogueSkeleton } from '@/features/home/states/skeleton/HomeSkeleton'
 import styles from './NowPlayingSection.module.scss'
 
 export function NowPlayingSection({ afterRecent = false }: { afterRecent?: boolean }) {
@@ -19,7 +20,7 @@ export function NowPlayingSection({ afterRecent = false }: { afterRecent?: boole
         <Link to="/sessions">See all</Link>
       </div>
       {movies.isPending ? (
-        <CatalogueState message="Loading now playing films…" />
+        <CatalogueSkeleton />
       ) : movies.isError ? (
         <CatalogueState
           message="Unable to load now playing films."

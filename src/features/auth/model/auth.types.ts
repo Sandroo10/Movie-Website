@@ -13,5 +13,5 @@ export type User = {
   profileComplete: boolean
 }
 export type AuthResponse = { data: { user: User; token: string } }
-export type ProtectedAction = (token: string) => Promise<void>
+export type ProtectedAction = (token: string, user: User) => Promise<void>
 export type AuthMode = 'login' | 'register'

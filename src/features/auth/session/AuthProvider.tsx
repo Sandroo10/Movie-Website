@@ -46,8 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
   const expireSession = useCallback(
     (action?: ProtectedAction) => {
+      const continuation = action ?? pendingAction.current
       clearSession()
-      openLogin(action)
+      openLogin(continuation)
     },
     [clearSession, openLogin],
   )
@@ -60,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         return await getCurrentUser(session.token!, signal)
       } catch (error) {
-        if (isApiError(error) && error.status === 401) clearSession()
+        if (isApiError(error) && error.status === 401) expireSession()
         throw error
       }
     },
@@ -74,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const action = pendingAction.current
     pendingAction.current = undefined
     if (action)
-      void action(token).catch(() => {
+      void action(token, user).catch(() => {
         /* The action presents its own error. */
       })
   }

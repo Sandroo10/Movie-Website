@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ProfileMenu } from './ProfileMenu'
+import { AccountSkeleton } from './AccountSkeleton'
 import { useAuth } from '../session/auth-context'
 import styles from './AccountNavigation.module.scss'
 
@@ -10,7 +11,7 @@ export function AccountNavigation() {
     <div className={styles.account}>
       <div className={styles.actions}>
         {restoring ? (
-          <span role="status">Restoring session…</span>
+          <AccountSkeleton />
         ) : token && sessionError ? (
           <button type="button" onClick={retrySession}>
             Retry session

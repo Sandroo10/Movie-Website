@@ -1,4 +1,7 @@
+@use '../../../../styles/card-motion' as motion;
+
 .card {
+  @include motion.hover;
   width: 260px;
   height: 452px;
   padding: 12px;
@@ -19,6 +22,7 @@
 }
 
 .poster {
+  transition: transform 300ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,6 +89,7 @@
 }
 
 .buy {
+  transition: background-color 240ms ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -94,4 +99,22 @@
   font-size: 14px;
   font-weight: 800;
   line-height: normal;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover img.poster {
+    transform: scale(1.025);
+  }
+  .card:hover .buy {
+    background-color: var(--color-accent-hover);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .poster,
+  .buy {
+    transition: none;
+  }
+  .card:hover img.poster {
+    transform: none;
+  }
 }

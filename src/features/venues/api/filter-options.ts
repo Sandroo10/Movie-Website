@@ -3,6 +3,10 @@ import type { Venue } from '../model/venue.types'
 
 export type FilterOptions = {
   venues: Venue[]
+  formats: { id: number; slug: string; name: string; priceUplift: number }[]
+  languages: { id: number; slug: string; name: string; code: string }[]
+  timeBands: { id: string; label: string }[]
+  sorts: { id: string; label: string }[]
   ageRatings: { code: string; minAge: number; description: string }[]
 }
 

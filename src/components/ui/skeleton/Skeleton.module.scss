@@ -1,0 +1,22 @@
+.block {
+  display: inline-block;
+  flex-shrink: 0;
+  max-width: 100%;
+  vertical-align: middle;
+  background: linear-gradient(100deg, #2a2c3d 20%, #37394b 45%, #2a2c3d 70%);
+  background-size: 250% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .block {
+    animation: none;
+  }
+}

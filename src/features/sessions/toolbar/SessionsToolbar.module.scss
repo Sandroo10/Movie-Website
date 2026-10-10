@@ -1,0 +1,27 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+}
+.sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  > div {
+    width: 230px;
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+}
+@media (max-width: 650px) {
+  .toolbar {
+    flex-wrap: wrap;
+  }
+}

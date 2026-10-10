@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import type { Movie } from '@/features/movies/model/movie.types'
 import { SearchResultItem } from './SearchResultItem'
+import { SearchSkeleton } from './SearchSkeleton'
 import styles from '@/features/search/search-box/MovieSearch.module.scss'
 export function SearchResults({
   query,
@@ -38,9 +39,7 @@ export function SearchResults({
       {!query.trim() ? (
         empty('popcorn', 'What do you want to watch?', 'Search by title')
       ) : waiting ? (
-        <p className={styles.searchMessage} role="status">
-          Searching…
-        </p>
+        <SearchSkeleton />
       ) : error ? (
         <div className={styles.searchMessage} role="alert">
           <p>{error.message}</p>

@@ -1,0 +1,50 @@
+.pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 52px;
+  nav {
+    display: flex;
+    gap: 8px;
+  }
+  button,
+  .ellipsis {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: #a9a9a9;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+  }
+  button {
+    cursor: pointer;
+  }
+  button[aria-current] {
+    background: #ec3013;
+    color: #fff;
+  }
+  .arrow {
+    background: #1e2031;
+  }
+  img {
+    width: 16px;
+    height: 16px;
+  }
+  .next img {
+    transform: rotate(180deg);
+  }
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  p {
+    color: #a9a9a9;
+    font-size: 12px;
+  }
+}

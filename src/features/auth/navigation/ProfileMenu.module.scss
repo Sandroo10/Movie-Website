@@ -3,6 +3,10 @@
   z-index: 40;
 }
 .profileTrigger {
+  border-radius: 999px;
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease;
   display: flex;
   gap: 12px;
   align-items: center;
@@ -51,12 +55,31 @@
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
-    &:hover {
+    transition: background-color 200ms ease;
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
       background: #1e2031;
     }
   }
   > a + a {
     margin-top: 2px;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .profileTrigger:hover {
+    background-color: rgb(255 255 255 / 8%);
+    box-shadow: 0 0 0 6px rgb(255 255 255 / 8%);
+  }
+}
+.profileTrigger:focus-visible {
+  background-color: rgb(255 255 255 / 8%);
+  box-shadow: 0 0 0 6px rgb(255 255 255 / 8%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .profileTrigger,
+  .profileMenu > a,
+  .profileMenu > button {
+    transition: none;
   }
 }
 .identity {

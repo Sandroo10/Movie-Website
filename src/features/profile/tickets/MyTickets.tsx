@@ -2,6 +2,8 @@ import { Link } from 'react-router'
 import type { UseQueryResult } from '@tanstack/react-query'
 import type { TicketOrder } from '../model/ticket.types'
 import { TicketCard } from './TicketCard'
+import { TicketsSkeleton } from '../states/ProfileSkeleton'
+import { Skeleton } from '@/components/ui/skeleton/Skeleton'
 import styles from './MyTickets.module.scss'
 
 export function MyTickets({
@@ -25,14 +27,16 @@ export function MyTickets({
           aria-current={!past ? 'page' : undefined}
           onClick={() => onTab(false)}
         >
-          Upcoming <span>{query.data ? upcoming.length : '…'}</span>
+          Upcoming{' '}
+          {query.isPending ? <Skeleton width={16} height={12} /> : <span>{upcoming.length}</span>}
         </button>
         <button type="button" aria-current={past ? 'page' : undefined} onClick={() => onTab(true)}>
-          Past <span>{query.data ? history.length : '…'}</span>
+          Past{' '}
+          {query.isPending ? <Skeleton width={16} height={12} /> : <span>{history.length}</span>}
         </button>
       </nav>
       {query.isPending ? (
-        <p role="status">Loading your tickets…</p>
+        <TicketsSkeleton />
       ) : query.isError ? (
         <div className={styles.state} role="alert">
           <p>Unable to load tickets. {query.error.message}</p>

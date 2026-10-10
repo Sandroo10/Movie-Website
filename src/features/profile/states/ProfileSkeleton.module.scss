@@ -1,0 +1,23 @@
+.form {
+  width: min(880px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tickets {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.ticketCopy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

@@ -9,7 +9,7 @@ export function MovieRail({
 }: {
   label: string
   children: ReactNode
-  variant?: 'standard' | 'upcoming' | 'recent'
+  variant?: 'standard' | 'upcoming' | 'recent' | 'sessions'
 }) {
   const { viewportRef, carousel, canScrollNext } = useMovieRail()
 

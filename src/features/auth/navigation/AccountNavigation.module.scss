@@ -7,6 +7,10 @@
   gap: 12px;
   font-size: 12px;
   > button {
+    transition:
+      background-color 200ms ease,
+      box-shadow 200ms ease,
+      transform 200ms ease;
     flex-shrink: 0;
     padding: 13px 22px;
     border: 0;
@@ -22,6 +26,31 @@
   .signUp {
     background: #ec3013;
     color: #fff;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .actions > button:hover:not(:disabled) {
+    background-color: #e4e6ed;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgb(255 255 255 / 15%);
+  }
+  .actions .signUp:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+    box-shadow: 0 4px 14px rgb(236 48 19 / 30%);
+  }
+}
+.actions > button:focus-visible {
+  box-shadow: 0 0 0 4px rgb(255 255 255 / 15%);
+}
+.actions .signUp:focus-visible {
+  box-shadow: 0 0 0 4px rgb(236 48 19 / 20%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .actions > button {
+    transition: none;
+  }
+  .actions > button:hover:not(:disabled) {
+    transform: none;
   }
 }
 .notice {

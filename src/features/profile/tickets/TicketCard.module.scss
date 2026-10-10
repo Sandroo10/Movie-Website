@@ -1,3 +1,8 @@
+@use '../../../styles/card-motion' as motion;
+
+article.card {
+  @include motion.hover(0px);
+}
 .card {
   display: flex;
   align-items: stretch;

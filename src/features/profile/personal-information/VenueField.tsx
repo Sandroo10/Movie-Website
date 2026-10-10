@@ -1,5 +1,7 @@
-import { useId, type SelectHTMLAttributes, type Ref } from 'react'
+import { useId, type Ref } from 'react'
+import { Select } from '@/components/ui/select/Select'
 import type { Venue } from '@/features/venues/model/venue.types'
+import { Skeleton, SkeletonGroup } from '@/components/ui/skeleton/Skeleton'
 import styles from './PersonalInformation.module.scss'
 
 export function VenueField({
@@ -8,8 +10,12 @@ export function VenueField({
   error,
   onRetry,
   ...props
-}: SelectHTMLAttributes<HTMLSelectElement> & {
-  ref?: Ref<HTMLSelectElement>
+}: {
+  ref?: Ref<HTMLButtonElement>
+  value: string
+  onChange: (value: string) => void
+  onBlur: () => void
+  disabled: boolean
   venues: Venue[]
   pending: boolean
   error: Error | null
@@ -20,20 +26,26 @@ export function VenueField({
     <div className={styles.venueField}>
       <label htmlFor={id}>Preferred Venue (Optional)</label>
       <div className={styles.selectWrap}>
-        <select
-          {...props}
-          id={id}
-          disabled={props.disabled || pending || Boolean(error)}
-          aria-describedby={error ? `${id}-error` : undefined}
-        >
-          <option value="">{pending ? 'Loading venues…' : 'Select a venue'}</option>
-          {venues.map((venue) => (
-            <option key={venue.id} value={venue.id}>
-              {venue.name} · {venue.city}
-            </option>
-          ))}
-        </select>
-        <img src="/assets/kino/chevron-down.svg" alt="" />
+        {pending ? (
+          <SkeletonGroup label="Loading venues">
+            <Skeleton height={40} radius={12} />
+          </SkeletonGroup>
+        ) : (
+          <Select
+            {...props}
+            id={id}
+            label="Preferred Venue (Optional)"
+            disabled={props.disabled || Boolean(error)}
+            describedBy={error ? `${id}-error` : undefined}
+            options={[
+              { value: '', label: 'Select a venue' },
+              ...venues.map((venue) => ({
+                value: String(venue.id),
+                label: `${venue.name} · ${venue.city}`,
+              })),
+            ]}
+          />
+        )}
       </div>
       {error && (
         <p id={`${id}-error`} role="alert">

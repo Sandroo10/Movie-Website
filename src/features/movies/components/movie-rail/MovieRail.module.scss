@@ -3,6 +3,8 @@
   min-width: 0;
 }
 .viewport {
+  padding-block: 6px 12px;
+  margin-block: -6px -12px;
   overflow: hidden;
 }
 .track {
@@ -36,6 +38,17 @@
   }
   .slide {
     flex-basis: 329px;
+  }
+}
+.sessions {
+  .track {
+    gap: 12px;
+  }
+  .slide {
+    flex-basis: 252px;
+  }
+  .edgeFade {
+    display: none;
   }
 }
 

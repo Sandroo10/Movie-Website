@@ -1,5 +1,5 @@
 .header {
-  position: absolute;
+  position: fixed;
   inset: 0 0 auto;
   z-index: 10;
   display: flex;
@@ -9,6 +9,17 @@
   padding: 30px 60px 40px;
   background: url('/assets/kino/navbar-shade.png') center / cover no-repeat;
   color: #fff;
+
+  &::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-background);
+    content: '';
+    opacity: var(--header-opacity, 0);
+    transition: opacity 100ms linear;
+    pointer-events: none;
+  }
 }
 
 .navigation {
@@ -36,6 +47,17 @@
   line-height: normal;
   letter-spacing: 0.72px;
   text-decoration: none;
+  transition: color 200ms ease;
+
+  &:focus-visible {
+    color: var(--color-accent);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sessionsLink:hover {
+    color: var(--color-accent);
+  }
 }
 
 .actions {
@@ -67,5 +89,15 @@
   .actions {
     width: 100%;
     justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sessionsLink {
+    transition: none;
+  }
+
+  .header::before {
+    transition: none;
   }
 }

@@ -14,7 +14,11 @@
   border: 1px solid transparent;
   border-radius: 999px;
   background: rgb(255 255 255 / 10%);
-  transition: width 150ms;
+  transition:
+    width 150ms ease,
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
   input {
     min-width: 0;
     width: 100%;
@@ -44,6 +48,7 @@
   gap: 8px;
 }
 .clearSearch {
+  transition: background-color 200ms ease;
   flex: none;
   display: grid;
   place-items: center;
@@ -57,6 +62,21 @@
   img {
     transform: scale(0.42);
   }
+}
+@media (hover: hover) and (pointer: fine) {
+  .searchBar:hover {
+    background-color: rgb(255 255 255 / 16%);
+    border-color: rgb(255 255 255 / 24%);
+    box-shadow: 0 0 0 3px rgb(255 255 255 / 4%);
+  }
+  .clearSearch:hover {
+    background-color: rgb(255 255 255 / 22%);
+  }
+}
+.searchBar:focus-within {
+  border-color: var(--color-accent);
+  background-color: rgb(255 255 255 / 14%);
+  box-shadow: 0 0 0 3px rgb(236 48 19 / 12%);
 }
 .searchPanel {
   position: absolute;
@@ -216,7 +236,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .searchBar {
+  .searchBar,
+  .clearSearch {
     transition: none;
   }
 }

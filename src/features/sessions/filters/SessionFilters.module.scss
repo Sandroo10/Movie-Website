@@ -1,0 +1,206 @@
+.panel {
+  position: sticky;
+  top: 135px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  height: 1001px;
+  max-height: calc(100vh - 159px);
+  border-radius: 16px;
+  background: #1e2031;
+  overflow-y: auto;
+  scrollbar-width: none;
+  h2 {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: normal;
+  }
+}
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.group {
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 24px;
+  border: 0;
+  border-bottom: 1px solid #2a2c3d;
+  legend {
+    margin-bottom: 12px;
+    padding: 0;
+    color: #a9a9a9;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.72px;
+    line-height: normal;
+    text-transform: uppercase;
+  }
+  p {
+    color: #a9a9a9;
+    font-size: 12px;
+  }
+}
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.choice {
+  border-radius: 4px;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 18px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+  small {
+    transition: color 180ms ease;
+    color: #a9a9a9;
+    font-size: 12px;
+    font-weight: 400;
+  }
+  input {
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    flex: none;
+    margin: 0;
+    border: 1.5px solid #505261;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  input:checked {
+    border: 0;
+    background: url('/assets/kino/checkbox-checked.svg') center / 18px 18px no-repeat;
+  }
+}
+.days {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  button {
+    transition:
+      background-color 180ms ease,
+      box-shadow 180ms ease;
+    display: flex;
+    flex: 0 0 37px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 54px;
+    padding: 10px 6px;
+    border: 0;
+    border-radius: 8px;
+    background: #2a2c3d;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: normal;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 20%);
+    cursor: pointer;
+  }
+  button[aria-pressed='true'] {
+    background: #ec3013;
+  }
+}
+.selectedDate {
+  margin-top: 8px;
+}
+.footer {
+  margin-top: auto;
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #a9a9a9;
+  button {
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      box-shadow 180ms ease;
+    width: 100%;
+    padding: 8px 18px;
+    border: 0;
+    border-radius: 999px;
+    color: #fff;
+    background: rgb(255 255 255 / 10%);
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+}
+.choice:focus-within {
+  color: var(--color-accent);
+  background-color: rgb(255 255 255 / 4%);
+  box-shadow: 0 0 0 4px rgb(255 255 255 / 4%);
+}
+.days button:focus-visible {
+  outline-offset: -2px;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 40%);
+}
+.footer button:focus-visible {
+  background-color: rgb(255 255 255 / 18%);
+}
+@media (hover: hover) and (pointer: fine) {
+  .choice:hover {
+    color: var(--color-accent);
+    background-color: rgb(255 255 255 / 4%);
+    box-shadow: 0 0 0 4px rgb(255 255 255 / 4%);
+    small {
+      color: #c9cad4;
+    }
+    input {
+      box-shadow: 0 0 0 3px rgb(236 48 19 / 12%);
+    }
+    input:not(:checked) {
+      border-color: var(--color-accent);
+      background-color: rgb(236 48 19 / 8%);
+    }
+  }
+  .days button:hover:not(:disabled) {
+    background-color: #3a3d53;
+    box-shadow: inset 0 0 0 1px #505261;
+  }
+  .days button[aria-pressed='true']:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 25%);
+  }
+  .footer button:hover:not(:disabled) {
+    color: var(--color-accent);
+    background-color: rgb(255 255 255 / 18%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 12%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .choice,
+  .choice small,
+  .choice input,
+  .days button,
+  .footer button {
+    transition: none;
+  }
+}
+@media (max-width: 900px) {
+  .panel {
+    position: static;
+    height: auto;
+    max-height: none;
+  }
+}
