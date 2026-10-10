@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import type { Movie } from '@/features/movies/model/movie.types'
 import { SearchResultItem } from './SearchResultItem'
 import { SearchSkeleton } from './SearchSkeleton'
+import { FeedbackState } from '@/components/ui/feedback-state/FeedbackState'
 import styles from '@/features/search/search-box/MovieSearch.module.scss'
 export function SearchResults({
   query,
@@ -41,12 +42,13 @@ export function SearchResults({
       ) : waiting ? (
         <SearchSkeleton />
       ) : error ? (
-        <div className={styles.searchMessage} role="alert">
-          <p>{error.message}</p>
-          <button type="button" onClick={onRetry}>
-            Try again
-          </button>
-        </div>
+        <FeedbackState
+          className={styles.searchMessage}
+          error
+          message={error.message}
+          onAction={onRetry}
+          actionLabel="Try again"
+        />
       ) : !matches.length ? (
         empty(
           'search-large',

@@ -1,4 +1,5 @@
 import styles from './CatalogueState.module.scss'
+import { FeedbackState } from '@/components/ui/feedback-state/FeedbackState'
 
 export function CatalogueState({
   message,
@@ -10,13 +11,12 @@ export function CatalogueState({
   compact?: boolean
 }) {
   return (
-    <div className={`${styles.state} ${compact ? styles.compact : ''}`} role="status">
-      <p>{message}</p>
-      {onRetry && (
-        <button type="button" onClick={onRetry}>
-          Try again
-        </button>
-      )}
-    </div>
+    <FeedbackState
+      className={`${styles.state} ${compact ? styles.compact : ''}`}
+      message={message}
+      onAction={onRetry}
+      actionLabel="Try again"
+      error={Boolean(onRetry)}
+    />
   )
 }

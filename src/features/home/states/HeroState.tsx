@@ -1,10 +1,16 @@
 import styles from './HeroState.module.scss'
+import { FeedbackState } from '@/components/ui/feedback-state/FeedbackState'
 
 export function HeroState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <section className={styles.state} aria-label="Featured films" aria-live="polite">
-      <p>{message}</p>
-      {onRetry && <button onClick={onRetry}>Try again</button>}
-    </section>
+    <FeedbackState
+      as="section"
+      className={styles.state}
+      label="Featured films"
+      message={message}
+      onAction={onRetry}
+      actionLabel="Try again"
+      error={Boolean(onRetry)}
+    />
   )
 }

@@ -10,6 +10,7 @@ import { SessionsPagination } from '@/features/sessions/pagination/SessionsPagin
 import { SessionsSkeleton } from '@/features/sessions/states/SessionsSkeleton'
 import { SessionFiltersSkeleton } from '@/features/sessions/states/SessionFiltersSkeleton'
 import { Skeleton, SkeletonGroup } from '@/components/ui/skeleton/Skeleton'
+import { FeedbackState } from '@/components/ui/feedback-state/FeedbackState'
 import toolbarStyles from '@/features/sessions/toolbar/SessionsToolbar.module.scss'
 import styles from './SessionsPage.module.scss'
 
@@ -39,13 +40,13 @@ export function SessionsPage() {
           </div>
         </div>
       ) : options.isError ? (
-        <div className={styles.state} role="alert">
-          <h2>Unable to load filters</h2>
-          <p>{options.error.message}</p>
-          <button type="button" onClick={() => void options.refetch()}>
-            Retry
-          </button>
-        </div>
+        <FeedbackState
+          className={styles.state}
+          error
+          title="Unable to load filters"
+          message={options.error.message}
+          onAction={() => void options.refetch()}
+        />
       ) : (
         <div className={styles.layout}>
           <SessionFilters
@@ -69,26 +70,27 @@ export function SessionsPage() {
             {query.isPending ? (
               <SessionsSkeleton />
             ) : query.isError ? (
-              <div className={styles.state} role="alert">
-                <h2>Unable to load sessions</h2>
-                <p>{query.error.message}</p>
-                <button type="button" onClick={() => void query.refetch()}>
-                  Retry
-                </button>
-              </div>
+              <FeedbackState
+                className={styles.state}
+                error
+                title="Unable to load sessions"
+                message={query.error.message}
+                onAction={() => void query.refetch()}
+              />
             ) : !query.data?.data.length ? (
-              <div className={styles.state}>
-                <h2>No sessions found</h2>
-                <p>Try another date or clear your filters.</p>
-                <button type="button" onClick={clear}>
-                  Clear All Filters
-                </button>
+              <FeedbackState
+                className={styles.state}
+                title="No sessions found"
+                message="Try another date or clear your filters."
+                onAction={clear}
+                actionLabel="Clear All Filters"
+              >
                 {filters.page > 1 && (
                   <button type="button" onClick={() => change({ page: 1 })}>
                     Return to page 1
                   </button>
                 )}
-              </div>
+              </FeedbackState>
             ) : (
               <>
                 <div className={styles.groups}>

@@ -8,6 +8,7 @@ import { useTickets } from '@/features/profile/hooks/useTickets'
 import { useProfileContinuation } from '@/features/profile/hooks/useProfileContinuation'
 import { ProfileSkeleton, TicketsSkeleton } from '@/features/profile/states/ProfileSkeleton'
 import { Skeleton, SkeletonGroup } from '@/components/ui/skeleton/Skeleton'
+import { FeedbackState } from '@/components/ui/feedback-state/FeedbackState'
 import styles from './ProfilePage.module.scss'
 
 export function ProfilePage() {
@@ -76,15 +77,19 @@ export function ProfilePage() {
           <ProfileSkeleton />
         )
       ) : sessionError ? (
-        <div className={styles.state} role="alert">
-          <p>Unable to load your profile. {sessionError.message}</p>
-          <button onClick={retrySession}>Retry</button>
-        </div>
+        <FeedbackState
+          className={styles.state}
+          error
+          message={`Unable to load your profile. ${sessionError.message}`}
+          onAction={retrySession}
+        />
       ) : !user ? (
-        <div className={styles.state}>
-          <p>Log in to manage your profile and tickets.</p>
-          <button onClick={() => openLogin()}>Log in</button>
-        </div>
+        <FeedbackState
+          className={styles.state}
+          message="Log in to manage your profile and tickets."
+          onAction={() => openLogin()}
+          actionLabel="Log in"
+        />
       ) : ticketsTab ? (
         <MyTickets
           query={tickets}
