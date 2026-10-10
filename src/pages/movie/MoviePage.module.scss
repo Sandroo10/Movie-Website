@@ -1,0 +1,36 @@
+.page {
+  min-height: calc(100vh - 120px);
+}
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 490px;
+  gap: 10px;
+  padding: 38px 57px 60px;
+}
+.error {
+  min-height: 80vh;
+  padding: 180px 67px 60px;
+  button,
+  a {
+    display: inline-block;
+    margin: 16px 16px 0 0;
+  }
+}
+.loading {
+  display: flex;
+  gap: 38px;
+  padding: 38px 67px;
+}
+@media (max-width: 1200px) {
+  .body {
+    grid-template-columns: minmax(0, 1fr) 350px;
+    padding-inline: 32px;
+  }
+}
+@media (max-width: 900px) {
+  .body {
+    grid-template-columns: 1fr;
+    gap: 35px;
+    padding-inline: 24px;
+  }
+}
