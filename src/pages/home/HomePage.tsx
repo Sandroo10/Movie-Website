@@ -21,10 +21,10 @@ export function HomePage() {
       ) : movies.data.length === 0 ? (
         <HeroState message="No featured films available right now." />
       ) : (
-        <HomeHero movies={movies.data} />
+        <HomeHero movies={movies.data} refreshing={movies.isFetching} />
       )}
-      {user && <RecentlyViewedSection userId={user.id} />}
-      <NowPlayingSection afterRecent={Boolean(user)} />
+      <RecentlyViewedSection userId={user?.id} />
+      <NowPlayingSection afterRecent />
       <ComingSoonSection />
     </main>
   )

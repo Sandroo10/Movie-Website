@@ -10,7 +10,7 @@ export function useProfileSave(
   setError: UseFormSetError<ProfileValues>,
   onSaved: (user: User) => void,
 ) {
-  const { token, updateUser, expireSession } = useAuth()
+  const { token, user, updateUser, expireSession } = useAuth()
   const client = useQueryClient()
   const pending = useIsMutating({ mutationKey: ['profile-save'] }) > 0
   const mutation = useMutation({
@@ -42,13 +42,18 @@ export function useProfileSave(
       }
     },
   })
-  async function submit(values: ProfileValues, accessToken = token) {
-    if (!accessToken || client.isMutating({ mutationKey: ['profile-save'] })) return
+  async function submit(values: ProfileValues, accessToken = token, ownerId = user?.id) {
+    if (!accessToken || ownerId == null || client.isMutating({ mutationKey: ['profile-save'] }))
+      return
     try {
       await mutation.mutateAsync({ values, accessToken })
     } catch (error) {
       if (isApiError(error) && error.status === 401)
-        expireSession((newToken) => submit(values, newToken))
+        expireSession(async (newToken, account) => {
+          // Preserve the original owner through every authentication retry.
+          if (account.id !== ownerId) return
+          await submit(values, newToken, ownerId)
+        })
     }
   }
   return {

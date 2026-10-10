@@ -3,8 +3,15 @@ import { HeroContent } from './content/HeroContent'
 import { HeroControls } from './controls/HeroControls'
 import { useHeroCarousel } from './hooks/useHeroCarousel'
 import styles from './HomeHero.module.scss'
+import { RefreshIndicator } from '@/components/ui/refresh-indicator/RefreshIndicator'
 
-export function HomeHero({ movies }: { movies: Movie[] }) {
+export function HomeHero({
+  movies,
+  refreshing = false,
+}: {
+  movies: Movie[]
+  refreshing?: boolean
+}) {
   const carousel = useHeroCarousel(movies.length)
   const movie = movies[carousel.index]
   if (!movie) return null
@@ -33,6 +40,7 @@ export function HomeHero({ movies }: { movies: Movie[] }) {
         ) : null,
       )}
       <div className={styles.heroGradient} aria-hidden="true" />
+      {refreshing && <RefreshIndicator overlay label="Refreshing featured films…" />}
       <HeroContent key={movie.id} movie={movie} />
       <HeroControls
         movies={movies}

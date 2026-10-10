@@ -12,7 +12,13 @@ import { VenueField } from './VenueField'
 import { Skeleton, SkeletonGroup } from '@/components/ui/skeleton/Skeleton'
 import styles from './PersonalInformation.module.scss'
 
-export function PersonalInformation({ user }: { user: User }) {
+export function PersonalInformation({
+  user,
+  onSaved,
+}: {
+  user: User
+  onSaved?: (user: User) => void
+}) {
   const options = useFilterOptions()
   const [saved, setSaved] = useState(false)
   const lock = useRef(false)
@@ -43,6 +49,7 @@ export function PersonalInformation({ user }: { user: User }) {
   const { submit, pending, message, clearMessage } = useProfileSave(setError, (updated) => {
     reset(profileValues(updated))
     setSaved(true)
+    onSaved?.(updated)
   })
   const ready = isDirty && profileSchema.safeParse(values).success && !Object.keys(errors).length
   function edited(field: keyof ProfileValues) {

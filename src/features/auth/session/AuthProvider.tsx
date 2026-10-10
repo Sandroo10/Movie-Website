@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.removeQueries({ queryKey: ['auth'] })
     queryClient.removeQueries({ queryKey: ['movie-notification'] })
     queryClient.removeQueries({ queryKey: ['profile'] })
+    queryClient.removeQueries({ queryKey: ['booking', 'seats'] })
     void queryClient.invalidateQueries({ queryKey: ['catalogue'] })
     setSession((current) => ({ token: null, revision: current.revision + 1 }))
   }, [queryClient])

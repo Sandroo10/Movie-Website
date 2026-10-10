@@ -81,7 +81,7 @@ export function SessionFilters({
         </FilterGroup>
       </div>
       <footer className={styles.footer}>
-        {(count > 0 || filters.search) && (
+        {(count > 0 || filters.search || filters.sort !== 'time_asc') && (
           <button type="button" onClick={onClear}>
             Clear All Filters
           </button>

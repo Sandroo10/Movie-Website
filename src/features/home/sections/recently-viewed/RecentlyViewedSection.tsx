@@ -3,7 +3,7 @@ import { RecentMovieCard } from '@/features/movies/cards/recent-movie-card/Recen
 import { MovieRail } from '@/features/movies/components/movie-rail/MovieRail'
 import styles from './RecentlyViewedSection.module.scss'
 
-export function RecentlyViewedSection({ userId }: { userId: number }) {
+export function RecentlyViewedSection({ userId }: { userId?: number }) {
   const { movies } = useRecentMovies(userId)
   return (
     <section className={styles.section} aria-labelledby="recently-viewed-title">

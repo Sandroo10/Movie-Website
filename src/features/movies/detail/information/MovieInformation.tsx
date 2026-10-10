@@ -9,6 +9,7 @@ export function MovieInformation({ movie }: { movie: MovieDetail }) {
     year: 'numeric',
   })
   const fields = [
+    ['Genre', movie.genres.map((genre) => genre.name).join(', ') || 'Not available'],
     ['Director', movie.director || 'Not available'],
     ['Main cast', movie.cast || 'Not available'],
     ['Duration', `${movie.runtimeMinutes} minutes`],

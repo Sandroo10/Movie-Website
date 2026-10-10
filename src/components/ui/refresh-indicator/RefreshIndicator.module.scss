@@ -1,0 +1,36 @@
+.indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  span {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--color-accent);
+    animation: pulse 1s ease-in-out infinite alternate;
+  }
+}
+.overlay {
+  position: absolute;
+  top: 128px;
+  right: 32px;
+  z-index: 5;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--color-background);
+}
+@keyframes pulse {
+  to {
+    opacity: 0.35;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .indicator span {
+    animation: none;
+  }
+}

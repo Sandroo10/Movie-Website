@@ -8,6 +8,16 @@ export type FilterOptions = {
   timeBands: { id: string; label: string }[]
   sorts: { id: string; label: string }[]
   ageRatings: { code: string; minAge: number; description: string }[]
+  ticketTypes: {
+    id: number
+    slug: string
+    name: string
+    priceRatio: number
+    note: string | null
+    blockedFromRatingAge: number | null
+  }[]
+  maxSeatsPerOrder: number
+  holdMinutes: number
 }
 
 export async function getFilterOptions(signal?: AbortSignal) {

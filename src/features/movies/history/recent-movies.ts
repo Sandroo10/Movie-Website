@@ -57,15 +57,14 @@ function subscribe(listener: () => void) {
   }
 }
 export function useRecentMovies(userId?: number) {
-  const key = userId ? `${PREFIX}${userId}` : null
+  const key = userId != null ? `${PREFIX}${userId}` : `${PREFIX}guest`
   const movies = useSyncExternalStore(
     subscribe,
-    () => (key ? read(key) : empty),
+    () => read(key),
     () => empty,
   )
   const remember = useCallback(
     (movie: Movie) => {
-      if (!key) return
       const item: RecentMovie = {
         id: movie.id,
         slug: movie.slug,

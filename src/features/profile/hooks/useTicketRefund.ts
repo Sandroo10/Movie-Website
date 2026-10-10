@@ -3,8 +3,10 @@ import { isApiError } from '@/api/api-error'
 import { useAuth } from '@/features/auth/session/auth-context'
 import { refundOrder } from '../api/tickets.api'
 import type { TicketOrder } from '../model/ticket.types'
+import { canRefund } from '../model/refund-rules'
 
-export function useTicketRefund(reference: string) {
+export function useTicketRefund(order: TicketOrder) {
+  const { reference } = order
   const { token, user, expireSession } = useAuth()
   const client = useQueryClient()
   const mutationKey = ['ticket-refund', reference]
@@ -25,7 +27,12 @@ export function useTicketRefund(reference: string) {
     },
   })
   async function refund(accessToken = token) {
-    if (!accessToken || client.isMutating({ mutationKey })) return
+    if (
+      !accessToken ||
+      !canRefund(order.isRefundable, order.session.startsAt) ||
+      client.isMutating({ mutationKey })
+    )
+      return
     try {
       await mutation.mutateAsync(accessToken)
     } catch (error) {

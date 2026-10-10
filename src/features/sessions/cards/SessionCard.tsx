@@ -1,5 +1,6 @@
 import type { Session } from '../model/session.types'
 import styles from './SessionCard.module.scss'
+import { useSessionStarted } from '../hooks/useSessionStarted'
 
 export function SessionCard({
   session,
@@ -11,14 +12,17 @@ export function SessionCard({
   onSelect: (session: Session) => void
 }) {
   const soldOut = session.isSoldOut
+  const started = useSessionStarted(session.startsAt)
   const low = session.seatsLeft < 10
   return (
     <button
       type="button"
       className={styles.card}
-      disabled={soldOut || Boolean(blocked)}
-      title={blocked || (soldOut ? 'This session is sold out.' : undefined)}
-      aria-label={`${session.time}, ${session.venue.name}, Hall ${session.hall.name}, ${session.format.name}, ${session.language.name}, from ₾${session.price}, ${soldOut ? 'Sold out' : `${session.seatsLeft} seats left`}`}
+      disabled={started || soldOut || Boolean(blocked)}
+      title={
+        started ? 'Session started' : blocked || (soldOut ? 'This session is sold out.' : undefined)
+      }
+      aria-label={`${session.time}, ${session.venue.name}, Hall ${session.hall.name}, ${session.format.name}, ${session.language.name}, from ₾${session.price}, ${started ? 'Session started' : soldOut ? 'Sold out' : `${session.seatsLeft} seats left`}`}
       onClick={() => onSelect(session)}
     >
       <span className={styles.top}>
@@ -34,10 +38,12 @@ export function SessionCard({
         </span>
         <span className={styles.price}>
           <span className={`${styles.seats} ${low ? styles.low : ''}`}>
-            {!soldOut && <img src={`/assets/kino/seats-${low ? 'low' : 'available'}.svg`} alt="" />}
-            {soldOut ? 'Sold out' : `${session.seatsLeft} left`}
+            {!started && !soldOut && (
+              <img src={`/assets/kino/seats-${low ? 'low' : 'available'}.svg`} alt="" />
+            )}
+            {started ? 'Session started' : soldOut ? 'Sold out' : `${session.seatsLeft} left`}
           </span>
-          <strong>₾{session.price}</strong>
+          <strong>from ₾{session.price}</strong>
         </span>
       </span>
     </button>

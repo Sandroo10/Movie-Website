@@ -6,6 +6,7 @@ import { MovieRail } from '@/features/movies/components/movie-rail/MovieRail'
 import { CatalogueState } from '@/features/home/states/catalogue/CatalogueState'
 import { CatalogueSkeleton } from '@/features/home/states/skeleton/HomeSkeleton'
 import styles from './NowPlayingSection.module.scss'
+import { RefreshIndicator } from '@/components/ui/refresh-indicator/RefreshIndicator'
 
 export function NowPlayingSection({ afterRecent = false }: { afterRecent?: boolean }) {
   const movies = useQuery(nowPlayingMoviesOptions)
@@ -19,6 +20,9 @@ export function NowPlayingSection({ afterRecent = false }: { afterRecent?: boole
         <h2 id="now-playing-heading">NOW PLAYING</h2>
         <Link to="/sessions">See all</Link>
       </div>
+      {movies.isFetching && !movies.isPending && (
+        <RefreshIndicator label="Refreshing now playing films…" />
+      )}
       {movies.isPending ? (
         <CatalogueSkeleton />
       ) : movies.isError ? (

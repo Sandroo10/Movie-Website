@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { TicketOrder } from '../model/ticket.types'
 import { useTicketRefund } from '../hooks/useTicketRefund'
+import { useRefundAvailability } from '../hooks/useRefundAvailability'
 import { refundDeadline, sessionDate, ticketPrice } from './ticket-format'
 import styles from './TicketCard.module.scss'
 
@@ -8,7 +9,8 @@ export function TicketCard({ order }: { order: TicketOrder }) {
   const { session, tickets } = order
   const { movie } = session
   const [confirming, setConfirming] = useState(false)
-  const { refund, pending, error, clearError } = useTicketRefund(order.reference)
+  const { refund, pending, error, clearError } = useTicketRefund(order)
+  const refundable = useRefundAvailability(order.isRefundable, session.startsAt)
   const reason = 'Refunds close 2 hours before the session starts.'
   return (
     <article className={styles.card}>
@@ -63,11 +65,15 @@ export function TicketCard({ order }: { order: TicketOrder }) {
         </div>
         {order.isUpcoming && (
           <>
-            {confirming && order.isRefundable ? (
+            {confirming && (refundable || pending) ? (
               <div className={styles.confirmation}>
                 <p>Refund this order? All its seats will be released.</p>
                 <div>
-                  <button type="button" disabled={pending} onClick={() => void refund()}>
+                  <button
+                    type="button"
+                    disabled={!refundable || pending}
+                    onClick={() => void refund()}
+                  >
                     {pending ? 'Refunding…' : 'Confirm refund'}
                   </button>
                   <button
@@ -86,8 +92,8 @@ export function TicketCard({ order }: { order: TicketOrder }) {
               <button
                 className={styles.refund}
                 type="button"
-                disabled={!order.isRefundable || pending}
-                title={!order.isRefundable ? reason : undefined}
+                disabled={!refundable || pending}
+                title={!refundable ? reason : undefined}
                 onClick={() => {
                   clearError()
                   setConfirming(true)
@@ -97,7 +103,7 @@ export function TicketCard({ order }: { order: TicketOrder }) {
               </button>
             )}
             <p className={styles.deadline}>
-              {order.isRefundable ? `Refundable until ${refundDeadline(session.startsAt)}` : reason}
+              {refundable ? `Refundable until ${refundDeadline(session.startsAt)}` : reason}
             </p>
           </>
         )}

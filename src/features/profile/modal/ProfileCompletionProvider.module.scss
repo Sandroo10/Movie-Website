@@ -1,0 +1,103 @@
+.dialog {
+  width: 600px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 32px;
+  border: 1px solid #2a2c3d;
+  border-radius: 28px;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+  transition:
+    opacity 200ms ease,
+    transform 240ms ease,
+    display 240ms allow-discrete,
+    overlay 240ms allow-discrete;
+  &[open] {
+    opacity: 1;
+    transform: none;
+  }
+  &::backdrop {
+    background: rgb(16 16 16 / 40%);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition:
+      opacity 200ms ease,
+      display 240ms allow-discrete,
+      overlay 240ms allow-discrete;
+  }
+  &[open]::backdrop {
+    opacity: 1;
+  }
+}
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  h2 {
+    font-size: 20px;
+    font-weight: 800;
+  }
+  button {
+    border: 0;
+    background: none;
+    padding: 0;
+    display: flex;
+    cursor: pointer;
+  }
+}
+.description {
+  margin: 12px 0 24px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.error {
+  margin-bottom: 20px;
+  color: var(--color-accent);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.close {
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px 22px;
+  border: 1px solid #2a2c3d;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+  &:hover {
+    border-color: var(--color-accent);
+    background: rgb(236 48 19 / 10%);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+}
+@starting-style {
+  .dialog[open] {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  .dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog,
+  .dialog::backdrop,
+  .close {
+    transition: none;
+    transform: none;
+  }
+}

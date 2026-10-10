@@ -51,6 +51,29 @@
     transform: none;
   }
 }
+.close {
+  width: 100%;
+  margin-top: 24px;
+  padding: 12px 22px;
+  border: 1px solid #2a2c3d;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+  &:hover {
+    background: rgb(236 48 19 / 10%);
+    border-color: #ec3013;
+  }
+  &:focus-visible {
+    outline: 2px solid #ec3013;
+    outline-offset: 3px;
+  }
+}
 .register {
   width: 475px;
   &::backdrop {

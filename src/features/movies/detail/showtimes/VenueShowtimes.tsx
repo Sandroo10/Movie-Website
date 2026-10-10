@@ -1,8 +1,14 @@
-import type { VenueShowtimes as VenueGroup } from '../api/movie-detail'
+import type { MovieDetail, VenueShowtimes as VenueGroup } from '../api/movie-detail'
 import { ShowtimeCard } from './ShowtimeCard'
 import styles from './MovieShowtimes.module.scss'
 
-export function VenueShowtimes({ group: { venue, sessions } }: { group: VenueGroup }) {
+export function VenueShowtimes({
+  group: { venue, sessions },
+  movie,
+}: {
+  group: VenueGroup
+  movie: MovieDetail
+}) {
   const halls = [...new Map(sessions.map((session) => [session.hall.id, session.hall])).values()]
   return (
     <div className={styles.venue}>
@@ -15,7 +21,7 @@ export function VenueShowtimes({ group: { venue, sessions } }: { group: VenueGro
               {sessions
                 .filter((session) => session.hall.id === hall.id)
                 .map((session) => (
-                  <ShowtimeCard key={session.id} session={session} />
+                  <ShowtimeCard key={session.id} session={session} movie={movie} />
                 ))}
             </div>
           </div>

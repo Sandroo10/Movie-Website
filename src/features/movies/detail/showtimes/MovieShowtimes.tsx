@@ -87,7 +87,9 @@ export function MovieShowtimes({ movie }: { movie: MovieDetail }) {
       ) : !query.data?.length ? (
         <FeedbackState message="No sessions on this date. Choose another available day." />
       ) : (
-        query.data.map((group) => <VenueShowtimes key={group.venue.id} group={group} />)
+        query.data.map((group) => (
+          <VenueShowtimes key={group.venue.id} group={group} movie={movie} />
+        ))
       )}
       {query.isFetching && !query.isPending && <p role="status">Refreshing showtimes…</p>}
     </section>

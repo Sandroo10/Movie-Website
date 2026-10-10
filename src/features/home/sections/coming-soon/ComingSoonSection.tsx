@@ -9,6 +9,7 @@ import { UpcomingMovieCard } from '@/features/movies/cards/upcoming-movie-card/U
 import { MovieRail } from '@/features/movies/components/movie-rail/MovieRail'
 import { useAuth } from '@/features/auth/session/auth-context'
 import styles from './ComingSoonSection.module.scss'
+import { RefreshIndicator } from '@/components/ui/refresh-indicator/RefreshIndicator'
 
 export function ComingSoonSection() {
   const { token, revision, expireSession } = useAuth()
@@ -23,6 +24,9 @@ export function ComingSoonSection() {
         <h2 id="coming-soon-heading">COMING SOON...</h2>
         <Link to="/sessions">See all</Link>
       </div>
+      {movies.isFetching && !movies.isPending && (
+        <RefreshIndicator label="Refreshing upcoming films…" />
+      )}
       {movies.isPending ? (
         <CatalogueSkeleton upcoming />
       ) : movies.isError ? (

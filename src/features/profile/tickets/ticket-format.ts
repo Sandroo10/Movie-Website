@@ -1,3 +1,5 @@
+import { refundClosesAt } from '../model/refund-rules'
+
 const day = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Tbilisi',
   weekday: 'short',
@@ -15,8 +17,7 @@ export function sessionDate(value: string) {
   return `${day.format(date)} · ${time.format(date)}`
 }
 export function refundDeadline(value: string) {
-  // Display only. Permission to refund always comes from the API's isRefundable flag.
-  const date = new Date(new Date(value).getTime() - 2 * 60 * 60 * 1000)
+  const date = new Date(refundClosesAt(value))
   return `${time.format(date)}, ${day.format(date)}`
 }
 export function ticketPrice(value: number) {

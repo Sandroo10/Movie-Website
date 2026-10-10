@@ -10,15 +10,17 @@ import { useRecentMovies } from '@/features/movies/history/recent-movies'
 import { FeedbackState } from '@/components/ui/feedback-state/FeedbackState'
 import { Skeleton, SkeletonGroup } from '@/components/ui/skeleton/Skeleton'
 import styles from './MoviePage.module.scss'
+import { BookingEntry } from '@/features/booking/modal/BookingEntry'
 
 export function MoviePage() {
   const { movieId = '' } = useParams()
   const query = useQuery(movieDetailOptions(movieId))
-  const { user } = useAuth()
+  const { user, token, restoring } = useAuth()
   const { remember } = useRecentMovies(user?.id)
   useEffect(() => {
-    if (user && query.data) remember(query.data)
-  }, [user, query.data, remember])
+    // Wait for a saved session to resolve before choosing guest or account history.
+    if (!restoring && (!token || user) && query.data) remember(query.data)
+  }, [restoring, token, user, query.data, remember])
   if (query.isPending)
     return (
       <main className={styles.page}>
@@ -48,6 +50,7 @@ export function MoviePage() {
   return (
     <main className={styles.page}>
       <MovieBanner movie={movie} />
+      <BookingEntry movieSlug={movie.slug} />
       <div className={styles.body}>
         <MovieShowtimes key={movie.id} movie={movie} />
         <MovieInformation movie={movie} />

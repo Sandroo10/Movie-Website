@@ -66,6 +66,9 @@ export function AuthModal({
       ) : (
         <LoginForm key={`login-${instance}`} active={open} onSwitch={() => onSwitch('register')} />
       )}
+      <button type="button" className={styles.close} onClick={onClose}>
+        Close
+      </button>
     </dialog>,
     document.body,
   )

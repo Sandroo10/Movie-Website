@@ -75,7 +75,16 @@ export function activeFilterCount(filters: SessionFilters) {
   return listKeys.reduce((count, key) => count + filters[key].length, 0)
 }
 export function clearSessionFilters(filters: SessionFilters): SessionFilters {
-  return { ...filters, venues: [], formats: [], languages: [], bands: [], search: '', page: 1 }
+  return {
+    ...filters,
+    venues: [],
+    formats: [],
+    languages: [],
+    bands: [],
+    search: '',
+    sort: 'time_asc',
+    page: 1,
+  }
 }
 
 export function updateSessionFilters(
