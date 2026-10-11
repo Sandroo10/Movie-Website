@@ -1,14 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/session/auth-context'
 import { useFilterOptions } from '@/features/venues/hooks/useFilterOptions'
 import { FeedbackState } from '@/components/ui/feedback-state/FeedbackState'
 import { Skeleton, SkeletonGroup } from '@/components/ui/skeleton/Skeleton'
-import { getBookingSession } from '../api/booking.api'
-import { useBookingModal } from './booking-context'
 import { useSessionStarted } from '@/features/sessions/hooks/useSessionStarted'
 import { useProfileCompletion } from '@/features/profile/modal/profile-completion-context'
+import { getBookingSession } from '../api/booking.api'
+import { bookingEligibility } from '../model/booking-eligibility'
+import { useBookingModal } from './booking-context'
 
 export function BookingEntry({ movieSlug }: { movieSlug: string }) {
   const [params, setParams] = useSearchParams()
@@ -28,82 +29,56 @@ export function BookingEntry({ movieSlug }: { movieSlug: string }) {
     retry: 1,
   })
   const matching = session.data?.movie.slug === movieSlug
+  // Trigger a new eligibility decision when the start time passes.
   const started = useSessionStarted(session.data?.startsAt ?? '')
-  const complete = Boolean(user?.profileComplete && user.age != null)
-  const ageAllowed = Boolean(
-    user?.age != null && session.data && user.age >= session.data.movie.ageRating.minAge,
-  )
-  useEffect(() => {
-    if (!id || !session.data || !options.data || !matching || started || !complete || !ageAllowed)
-      return
-    showBooking(session.data, options.data, () => {
-      setParams(
-        (previous) => {
-          const next = new URLSearchParams(previous)
-          next.delete('session')
-          return next
-        },
-        { replace: true },
-      )
-    })
-  }, [
-    id,
-    session.data,
-    options.data,
-    matching,
-    started,
-    complete,
-    ageAllowed,
-    showBooking,
-    setParams,
-  ])
+  const close = useCallback(() => {
+    setParams(
+      (previous) => {
+        const next = new URLSearchParams(previous)
+        next.delete('session')
+        return next
+      },
+      { replace: true },
+    )
+  }, [setParams])
+
   useEffect(() => {
     if (!id) {
       prompted.current = null
       profilePrompted.current = null
       return
     }
-    if (!session.data || !matching || restoring || started || session.data.movie.isComingSoon)
-      return
-    if (!user) {
+    if (!session.data || !options.data || !matching || restoring) return
+    const eligibility = bookingEligibility(user, session.data)
+    if (eligibility.allowed) {
+      showBooking(session.data, options.data, close)
+    } else if (eligibility.reason === 'login') {
       if (prompted.current !== id) {
         prompted.current = id
         openLogin()
       }
-    } else {
-      prompted.current = id
-      if (complete) return
-      const profileKey = `${id}-${user.id}`
-      if (profilePrompted.current === profileKey) return
-      profilePrompted.current = profileKey
-      requestCompletion(session.data, user.id, () => {
-        setParams(
-          (previous) => {
-            const next = new URLSearchParams(previous)
-            next.delete('session')
-            return next
-          },
-          { replace: true },
-        )
-      })
+    } else if (eligibility.reason === 'profile' && user) {
+      const key = `${id}-${user.id}`
+      if (profilePrompted.current !== key) {
+        profilePrompted.current = key
+        requestCompletion(session.data, user.id, close)
+      }
     }
+    if (user) prompted.current = id
   }, [
     id,
     session.data,
+    options.data,
     matching,
     restoring,
     started,
     user,
-    complete,
+    showBooking,
+    close,
     openLogin,
     requestCompletion,
-    setParams,
   ])
-  function close() {
-    const next = new URLSearchParams(params)
-    next.delete('session')
-    setParams(next, { replace: true })
-  }
+
   if (!rawId) return null
   if (!id)
     return (
@@ -135,41 +110,25 @@ export function BookingEntry({ movieSlug }: { movieSlug: string }) {
         </button>
       </FeedbackState>
     )
-  if (!matching || session.data?.movie.isComingSoon)
+  if (!matching)
     return (
       <FeedbackState
         error
-        message="This session does not belong to this movie or is not bookable."
+        message="This session does not belong to this movie."
         onAction={close}
         actionLabel="Close"
       />
     )
-  if (!session.data || !options.data) return null
-  if (started)
+  if (!session.data) return null
+  const eligibility = bookingEligibility(user, session.data)
+  if (eligibility.allowed || eligibility.reason === 'profile') return null
+  if (eligibility.reason === 'login')
     return (
       <FeedbackState
-        message="Session started. Booking is no longer available for this showtime."
-        onAction={close}
-        actionLabel="Close"
+        message={eligibility.message}
+        onAction={() => openLogin()}
+        actionLabel="Log in"
       />
     )
-  return (
-    <>
-      {!user && (
-        <FeedbackState
-          message="Log in to select your seats."
-          onAction={() => openLogin()}
-          actionLabel="Log in"
-        />
-      )}
-      {user && !ageAllowed && complete && (
-        <FeedbackState
-          error
-          message={`This film is rated ${session.data.movie.ageRating.code}. You cannot buy tickets for it with this account.`}
-          onAction={close}
-          actionLabel="Close"
-        />
-      )}
-    </>
-  )
+  return <FeedbackState error message={eligibility.message} onAction={close} actionLabel="Close" />
 }

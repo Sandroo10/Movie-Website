@@ -5,7 +5,7 @@ import type { FilterOptions } from '@/features/venues/api/filter-options'
 import { BookingContext } from './booking-context'
 import { BookingModal } from './BookingModal'
 import styles from './BookingProvider.module.scss'
-import { bookingEligibilityError } from '../model/booking-eligibility'
+import { bookingEligibility } from '../model/booking-eligibility'
 
 type ActiveBooking = {
   session: Session
@@ -31,7 +31,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   }, [])
   const showBooking = useCallback(
     (session: Session, options: FilterOptions, onDismiss: () => void) => {
-      if (!user || bookingEligibilityError(user, session.movie.ageRating)) return
+      if (!user || !bookingEligibility(user, session).allowed) return
       // A second session must not replace an operation that is still in flight.
       if (!busy.current) {
         setConfirmed(false)
@@ -52,7 +52,9 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     if (!busy.current) setActive(null)
   }
   const sameAccount = active?.owner === user?.id
-  const eligible = Boolean(active && !bookingEligibilityError(user, active.session.movie.ageRating))
+  const eligible = Boolean(
+    active && bookingEligibility(user, active.session, { checkAvailability: false }).allowed,
+  )
   return (
     <BookingContext.Provider value={{ showBooking }}>
       {children}

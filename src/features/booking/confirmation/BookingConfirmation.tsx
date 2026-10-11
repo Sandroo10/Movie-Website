@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { ModalCloseButton } from '@/components/ui/modal/Modal'
 import type { BookingOrder } from '../model/booking.types'
 import styles from '../modal/BookingModal.module.scss'
 export function BookingConfirmation({
@@ -39,9 +40,7 @@ export function BookingConfirmation({
         <Link className={styles.primary} to="/profile?tab=tickets" onClick={onClose}>
           View my tickets
         </Link>
-        <button type="button" onClick={onClose}>
-          Close
-        </button>
+        <ModalCloseButton onClose={onClose} />
       </div>
     </div>
   )

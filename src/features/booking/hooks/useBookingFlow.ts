@@ -10,7 +10,16 @@ import type { FilterOptions } from '@/features/venues/api/filter-options'
 import { getSeatMap, holdSeats, placeOrder } from '../api/booking.api'
 import type { BookingOrder, SeatHold, Selection } from '../model/booking.types'
 import type { CheckoutValues } from '../model/checkout.schema'
+import { bookingEligibility } from '../model/booking-eligibility'
+import { seatSelectionDetails, ticketPrice, ticketTypeAllowed } from '../model/seat-selection'
+import { bookingErrorDetails } from '../model/booking-error'
 import { hasSessionStarted, useSessionStarted } from '@/features/sessions/hooks/useSessionStarted'
+
+type BookingScreen =
+  | { step: 'seats'; hold: SeatHold | null }
+  | { step: 'checkout'; hold: SeatHold }
+  | { step: 'confirmation'; order: BookingOrder }
+type RequestStatus = 'idle' | 'holding' | 'paying'
 
 export function useBookingFlow(
   session: Session,
@@ -22,11 +31,11 @@ export function useBookingFlow(
   const client = useQueryClient()
   const started = useSessionStarted(session.startsAt)
   const [draft, setSelection] = useState<Selection[] | null>(null)
-  const [hold, setHold] = useState<SeatHold | null>(null)
-  const [order, setOrder] = useState<BookingOrder | null>(null)
-  const [checkout, setCheckout] = useState(false)
-  const [pending, setPending] = useState(false)
-  const [operation, setOperation] = useState<'hold' | 'payment' | null>(null)
+  const [screen, setScreen] = useState<BookingScreen>({ step: 'seats', hold: null })
+  const [requestStatus, setRequestStatus] = useState<RequestStatus>('idle')
+  const pending = requestStatus !== 'idle'
+  const hold = screen.step === 'confirmation' ? null : screen.hold
+  const order = screen.step === 'confirmation' ? screen.order : null
   const [message, setMessage] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
   const [contested, setContested] = useState<string[]>([])
@@ -51,42 +60,24 @@ export function useBookingFlow(
           .filter((seat) => seat.isMine)
           .map((seat) => ({ seatId: seat.id, ticketType: adult.slug }))
       : [])
-  const selected = selection.map((item) => ({
-    ...item,
-    seat: seatList.find((seat) => seat.id === item.seatId),
-    type: options.ticketTypes.find((type) => type.slug === item.ticketType),
-    problem: (() => {
-      const seat = seatList.find((seat) => seat.id === item.seatId)
-      if (!seat) return 'This seat is no longer on the hall map. Remove it and select another seat.'
-      if (contested.includes(seat.code) || seat.state === 'sold')
-        return 'This seat has been sold. Remove it and select another seat.'
-      if (seat.state === 'held' && !seat.isMine)
-        return 'This seat is held by another customer. Remove it and select another seat.'
-      if (seat.state === 'unavailable')
-        return 'This seat is unavailable. Remove it and select another seat.'
-      if (!options.ticketTypes.some((type) => type.slug === item.ticketType))
-        return 'This ticket type is no longer available. Choose another ticket type.'
-      return null
-    })(),
-  }))
-  const invalid = selected.some(
-    ({ seat, type, problem }) =>
-      Boolean(problem) ||
-      !seat ||
-      !type ||
-      contested.includes(seat.code) ||
-      (seat.state !== 'available' && !seat.isMine) ||
-      (type.blockedFromRatingAge != null &&
-        session.movie.ageRating.minAge >= type.blockedFromRatingAge),
+  const selected = seatSelectionDetails(
+    selection,
+    seatList,
+    options.ticketTypes,
+    contested,
+    session.movie.ageRating.minAge,
   )
+  const invalid = selected.some((item) => Boolean(item.problem))
   const subtotal = selected.reduce(
-    (sum, { type }) => sum + Math.round(session.price * (type?.priceRatio ?? 0) * 100) / 100,
+    (sum, { type }) => sum + ticketPrice(session.price, type?.priceRatio ?? 0),
     0,
   )
   const expireHold = useCallback(() => {
     holdGeneration.current += 1
-    setHold(null)
-    setCheckout(false)
+    // Expiry resets selection, but a successful payment response always wins.
+    setScreen((current) =>
+      current.step === 'confirmation' ? current : { step: 'seats', hold: null },
+    )
     setSelection([])
     setFieldErrors({})
     setMessage('Your hold time expired. Please re-select your seats.')
@@ -96,8 +87,7 @@ export function useBookingFlow(
     const account = await getCurrentUser(accessToken, new AbortController().signal)
     updateUser(account)
     if (!account.profileComplete || account.age == null) {
-      setHold(null)
-      setCheckout(false)
+      setScreen({ step: 'seats', hold: null })
       requestCompletion(session, account.id, onProfileCancel)
     }
   }
@@ -136,11 +126,7 @@ export function useBookingFlow(
   function ticketType(seatId: number, slug: string) {
     if (pending || hasSessionStarted(session.startsAt)) return
     const type = options.ticketTypes.find((item) => item.slug === slug)
-    if (
-      !type ||
-      (type.blockedFromRatingAge != null &&
-        session.movie.ageRating.minAge >= type.blockedFromRatingAge)
-    ) {
+    if (!ticketTypeAllowed(type, session.movie.ageRating.minAge)) {
       setMessage('This ticket type is not allowed for this film.')
       return
     }
@@ -151,48 +137,39 @@ export function useBookingFlow(
     setMessage(null)
   }
   async function recover(error: unknown) {
-    setMessage(
-      error instanceof Error ? error.message : 'Unable to complete your request. Please try again.',
-    )
-    if (!isApiError(error) || !error.payload || typeof error.payload !== 'object') return
-    const payload = error.payload as { contested?: string[]; errors?: Record<string, string[]> }
-    setFieldErrors(payload.errors ?? {})
-    if (error.status === 409 && Array.isArray(payload.contested)) {
-      const codes = payload.contested
+    const details = bookingErrorDetails(error)
+    setMessage(details.message)
+    setFieldErrors(details.errors)
+    if (details.status === 409 && details.contested.length) {
+      const codes = details.contested
       setContested(codes)
       setSelection((current) =>
         (current ?? selection).filter(
           (item) => !codes.includes(seatList.find((seat) => seat.id === item.seatId)?.code ?? ''),
         ),
       )
-      setHold(null)
-      setCheckout(false)
+      setScreen({ step: 'seats', hold: null })
       setMessage(
         `These seats were taken: ${codes.join(', ')}. Your other selections have been kept.`,
       )
       await seats.refetch()
-    } else if (error.status === 422 && !payload.errors && /hold.*expired/i.test(error.message))
-      expireHold()
+    } else if (details.holdExpired) expireHold()
   }
   async function next(accessToken = token, account: User | null = user) {
-    if (hasSessionStarted(session.startsAt)) {
-      setMessage('Session started. Booking is no longer available for this showtime.')
-      return
-    }
     if (!accessToken || lock.current || !selection.length || invalid) return
-    if (
-      !account?.profileComplete ||
-      account.age == null ||
-      account.age < session.movie.ageRating.minAge
-    ) {
-      setMessage('Complete your profile and meet the age requirement before booking.')
-      if (account && (!account.profileComplete || account.age == null))
+    // Seats already held by this account remain usable when no unheld seats remain.
+    const eligibility = bookingEligibility(account, session, {
+      allowSoldOut: selected.every((item) => item.seat?.isMine),
+    })
+    if (!eligibility.allowed) {
+      setMessage(eligibility.message)
+      if (eligibility.reason === 'profile' && account)
         requestCompletion(session, account.id, onProfileCancel)
       return
     }
+    if (!account) return
     lock.current = true
-    setPending(true)
-    setOperation('hold')
+    setRequestStatus('holding')
     setMessage(null)
     setFieldErrors({})
     owner.current = account.id
@@ -212,8 +189,7 @@ export function useBookingFlow(
         expireHold()
         return
       }
-      setHold(result)
-      setCheckout(true)
+      setScreen({ step: 'checkout', hold: result })
       setSelection(
         result.seats.map((seat) => ({ seatId: seat.seatId, ticketType: seat.ticketType.slug })),
       )
@@ -227,11 +203,7 @@ export function useBookingFlow(
         })
       else {
         await recover(error)
-        if (
-          isApiError(error) &&
-          error.status === 422 &&
-          /profile|full.?name|mobile|date.?of.?birth/i.test(error.message)
-        ) {
+        if (bookingErrorDetails(error).profileIncomplete) {
           try {
             await refreshRejectedProfile(accessToken)
           } catch (refreshError) {
@@ -251,13 +223,15 @@ export function useBookingFlow(
       }
     } finally {
       lock.current = false
-      setPending(false)
-      setOperation(null)
+      setRequestStatus('idle')
     }
   }
   async function pay(values: CheckoutValues, accessToken = token, account: User | null = user) {
-    if (hasSessionStarted(session.startsAt)) {
-      setMessage('Session started. Booking is no longer available for this showtime.')
+    const eligibility = bookingEligibility(account, session, { allowSoldOut: true })
+    if (!eligibility.allowed) {
+      setMessage(eligibility.message)
+      if (eligibility.reason === 'profile' && account)
+        requestCompletion(session, account.id, onProfileCancel)
       return
     }
     if (!accessToken || !hold || lock.current) return
@@ -270,14 +244,12 @@ export function useBookingFlow(
       return
     }
     lock.current = true
-    setPending(true)
-    setOperation('payment')
+    setRequestStatus('paying')
     setMessage(null)
     setFieldErrors({})
     try {
       const result = await placeOrder(hold.holdId, values, accessToken)
-      setOrder(result)
-      setHold(null)
+      setScreen({ step: 'confirmation', order: result })
       void client.invalidateQueries({ queryKey: ['profile', 'tickets'] })
       void client.invalidateQueries({ queryKey: ['catalogue'] })
       void client.invalidateQueries({ queryKey: ['booking', 'seats', session.id] })
@@ -291,8 +263,7 @@ export function useBookingFlow(
       } else await recover(error)
     } finally {
       lock.current = false
-      setPending(false)
-      setOperation(null)
+      setRequestStatus('idle')
     }
   }
   return {
@@ -302,9 +273,9 @@ export function useBookingFlow(
     selected,
     hold,
     order,
-    checkout,
+    step: screen.step,
     pending,
-    operation,
+    requestStatus,
     message,
     fieldErrors,
     contested,
@@ -316,7 +287,7 @@ export function useBookingFlow(
     pay,
     expireHold,
     back: () => {
-      setCheckout(false)
+      setScreen({ step: 'seats', hold })
       setFieldErrors({})
       void seats.refetch()
     },

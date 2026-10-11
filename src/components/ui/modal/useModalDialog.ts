@@ -14,7 +14,7 @@ function lockScroll() {
   }
 }
 
-export function useAuthDialog(open: boolean) {
+export function useModalDialog(open: boolean) {
   const dialog = useRef<HTMLDialogElement>(null)
   useEffect(() => {
     const element = dialog.current!

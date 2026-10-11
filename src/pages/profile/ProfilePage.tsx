@@ -5,37 +5,111 @@ import { Icon } from '@/components/ui/icon/Icon'
 import { PersonalInformation } from '@/features/profile/personal-information/PersonalInformation'
 import { MyTickets } from '@/features/profile/tickets/MyTickets'
 import { useTickets } from '@/features/profile/hooks/useTickets'
-import { useProfileContinuation } from '@/features/profile/hooks/useProfileContinuation'
 import { ProfileSkeleton, TicketsSkeleton } from '@/features/profile/states/ProfileSkeleton'
 import { Skeleton, SkeletonGroup } from '@/components/ui/skeleton/Skeleton'
 import { FeedbackState } from '@/components/ui/feedback-state/FeedbackState'
 import styles from './ProfilePage.module.scss'
 
-export function ProfilePage() {
-  const { user, token, restoring, sessionError, openLogin, retrySession } = useAuth()
-  const prompted = useRef(false)
-  const [params, setParams] = useSearchParams()
-  const tickets = useTickets()
-  const continuationMessage = useProfileContinuation(user)
-  const ticketsTab = params.get('tab') === 'tickets'
-  const past = params.get('history') === 'past'
+function getProfileTabLinks(params: URLSearchParams) {
   const personalParams = new URLSearchParams(params)
   personalParams.delete('tab')
   personalParams.delete('history')
+  const personalQuery = personalParams.toString()
+  const personalUrl = personalQuery ? `/profile?${personalQuery}` : '/profile'
+
   const ticketParams = new URLSearchParams(personalParams)
   ticketParams.set('tab', 'tickets')
-  const personalUrl = `/profile${personalParams.size ? `?${personalParams}` : ''}`
+  return { personalUrl, ticketsUrl: `/profile?${ticketParams}` }
+}
+
+type ProfileContentProps = {
+  auth: ReturnType<typeof useAuth>
+  tickets: ReturnType<typeof useTickets>
+  isTicketsTab: boolean
+  isPastTicketsTab: boolean
+  onHistoryChange: (showPast: boolean) => void
+}
+
+function ProfileContent({
+  auth,
+  tickets,
+  isTicketsTab,
+  isPastTicketsTab,
+  onHistoryChange,
+}: ProfileContentProps) {
+  const { user, restoring, sessionError, openLogin, retrySession } = auth
+
+  if (restoring) {
+    if (isTicketsTab) return <TicketsSkeleton />
+    return <ProfileSkeleton />
+  }
+  if (sessionError) {
+    return (
+      <FeedbackState
+        className={styles.state}
+        error
+        message={`Unable to load your profile. ${sessionError.message}`}
+        onAction={retrySession}
+      />
+    )
+  }
+  if (!user) {
+    return (
+      <FeedbackState
+        className={styles.state}
+        message="Log in to manage your profile and tickets."
+        onAction={() => openLogin()}
+        actionLabel="Log in"
+      />
+    )
+  }
+  if (isTicketsTab) {
+    return <MyTickets query={tickets} past={isPastTicketsTab} onTab={onHistoryChange} />
+  }
+  return (
+    <>
+      {!user.profileComplete && (
+        <div className={`${styles.status} ${styles.incomplete}`} role="status">
+          Please complete your profile to enable booking.
+        </div>
+      )}
+      <PersonalInformation key={user.id} user={user} />
+    </>
+  )
+}
+
+export function ProfilePage() {
+  const auth = useAuth()
+  const { user, token, restoring, openLogin } = auth
+  const hasPromptedLogin = useRef(false)
+
+  const [params, setParams] = useSearchParams()
+  const isTicketsTab = params.get('tab') === 'tickets'
+  const isPastTicketsTab = params.get('history') === 'past'
+  const { personalUrl, ticketsUrl } = getProfileTabLinks(params)
+
+  const tickets = useTickets()
+  const upcomingOrderCount = tickets.data?.filter((order) => order.isUpcoming).length
+
+  // Open login once when a guest visits the profile page.
   useEffect(() => {
-    if (user) prompted.current = true
-    if (!token && !restoring && !prompted.current) {
-      prompted.current = true
+    if (user) hasPromptedLogin.current = true
+    if (!token && !restoring && !hasPromptedLogin.current) {
+      hasPromptedLogin.current = true
       openLogin()
     }
   }, [user, token, restoring, openLogin])
-  const ticketCount = tickets.data?.filter((order) => order.isUpcoming).length
+
+  function changeTicketHistory(showPast: boolean) {
+    const next = new URLSearchParams(params)
+    if (showPast) next.set('history', 'past')
+    else next.delete('history')
+    setParams(next)
+  }
+
   return (
     <main className={styles.page}>
-      <header className={`${styles.heading} ${!ticketsTab ? styles.personalHeading : ''}`}>
+      <header className={`${styles.heading} ${!isTicketsTab ? styles.personalHeading : ''}`}>
         <h1>My Profile</h1>
         {restoring && (
           <SkeletonGroup label="Loading profile sections" className={styles.tabs}>
@@ -50,67 +124,29 @@ export function ProfilePage() {
         )}
         {user && (
           <nav className={styles.tabs} aria-label="Profile sections">
-            <Link to={personalUrl} aria-current={!ticketsTab ? 'page' : undefined}>
+            <Link to={personalUrl} aria-current={!isTicketsTab ? 'page' : undefined}>
               Personal Information
               {!user.profileComplete && (
                 <span className={styles.dot} aria-label="Profile incomplete" />
               )}
             </Link>
-            <Link to={`/profile?${ticketParams}`} aria-current={ticketsTab ? 'page' : undefined}>
+            <Link to={ticketsUrl} aria-current={isTicketsTab ? 'page' : undefined}>
               My Tickets
-              {ticketCount !== undefined && <span className={styles.count}>{ticketCount}</span>}
+              {upcomingOrderCount !== undefined && (
+                <span className={styles.count}>{upcomingOrderCount}</span>
+              )}
               {tickets.isPending && <Skeleton width={20} height={18} radius={999} />}
             </Link>
           </nav>
         )}
       </header>
-      {continuationMessage && (
-        <div className={styles.state} role="status">
-          <p>{continuationMessage}</p>
-          <Link to="/sessions">Browse sessions</Link>
-        </div>
-      )}
-      {restoring ? (
-        ticketsTab ? (
-          <TicketsSkeleton />
-        ) : (
-          <ProfileSkeleton />
-        )
-      ) : sessionError ? (
-        <FeedbackState
-          className={styles.state}
-          error
-          message={`Unable to load your profile. ${sessionError.message}`}
-          onAction={retrySession}
-        />
-      ) : !user ? (
-        <FeedbackState
-          className={styles.state}
-          message="Log in to manage your profile and tickets."
-          onAction={() => openLogin()}
-          actionLabel="Log in"
-        />
-      ) : ticketsTab ? (
-        <MyTickets
-          query={tickets}
-          past={past}
-          onTab={(showPast) => {
-            const next = new URLSearchParams(params)
-            if (showPast) next.set('history', 'past')
-            else next.delete('history')
-            setParams(next)
-          }}
-        />
-      ) : (
-        <>
-          {!user.profileComplete && (
-            <div className={`${styles.status} ${styles.incomplete}`} role="status">
-              Please complete your profile to enable booking.
-            </div>
-          )}
-          <PersonalInformation key={user.id} user={user} />
-        </>
-      )}
+      <ProfileContent
+        auth={auth}
+        tickets={tickets}
+        isTicketsTab={isTicketsTab}
+        isPastTicketsTab={isPastTicketsTab}
+        onHistoryChange={changeTicketHistory}
+      />
     </main>
   )
 }

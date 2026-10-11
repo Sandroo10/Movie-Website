@@ -2,6 +2,7 @@ import type { FilterOptions } from '@/features/venues/api/filter-options'
 import type { Session } from '@/features/sessions/model/session.types'
 import type { Seat, Selection } from '../model/booking.types'
 import styles from '../modal/BookingModal.module.scss'
+import { ticketPrice, ticketTypeAllowed } from '../model/seat-selection'
 
 export function SeatSummary({
   selected,
@@ -46,9 +47,7 @@ export function SeatSummary({
               <span>
                 Seat <strong>{seat?.code ?? seatId}</strong>
               </span>
-              <strong>
-                ₾{(Math.round(session.price * (type?.priceRatio ?? 0) * 100) / 100).toFixed(2)}
-              </strong>
+              <strong>₾{ticketPrice(session.price, type?.priceRatio ?? 0).toFixed(2)}</strong>
               <button
                 type="button"
                 aria-label={`Remove seat ${seat?.code ?? seatId}`}
@@ -60,11 +59,7 @@ export function SeatSummary({
             </div>
             <div className={styles.types}>
               {options.ticketTypes
-                .filter(
-                  (item) =>
-                    item.blockedFromRatingAge == null ||
-                    session.movie.ageRating.minAge < item.blockedFromRatingAge,
-                )
+                .filter((item) => ticketTypeAllowed(item, session.movie.ageRating.minAge))
                 .map((item) => (
                   <button
                     type="button"
@@ -89,12 +84,6 @@ export function SeatSummary({
                   Seat {seat?.code}: {messages.join(' ')}
                 </p>
               ))}
-            {type?.blockedFromRatingAge != null &&
-              session.movie.ageRating.minAge >= type.blockedFromRatingAge && (
-                <p role="alert">
-                  Seat {seat?.code}: this ticket type is not allowed for this age rating.
-                </p>
-              )}
           </div>
         ))}
       </div>

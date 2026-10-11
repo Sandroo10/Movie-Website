@@ -8,21 +8,27 @@ import { ComingSoonSection } from '@/features/home/sections/coming-soon/ComingSo
 import { RecentlyViewedSection } from '@/features/home/sections/recently-viewed/RecentlyViewedSection'
 import { useAuth } from '@/features/auth/session/auth-context'
 
-export function HomePage() {
+function FeaturedMovies() {
   const movies = useQuery(featuredMoviesOptions)
+
+  if (movies.isPending) return <HeroSkeleton />
+  if (movies.isError) {
+    return (
+      <HeroState message="Unable to load featured films." onRetry={() => void movies.refetch()} />
+    )
+  }
+  if (movies.data.length === 0) {
+    return <HeroState message="No featured films available right now." />
+  }
+  return <HomeHero movies={movies.data} refreshing={movies.isFetching} />
+}
+
+export function HomePage() {
   const { user } = useAuth()
 
   return (
     <main>
-      {movies.isPending ? (
-        <HeroSkeleton />
-      ) : movies.isError ? (
-        <HeroState message="Unable to load featured films." onRetry={() => void movies.refetch()} />
-      ) : movies.data.length === 0 ? (
-        <HeroState message="No featured films available right now." />
-      ) : (
-        <HomeHero movies={movies.data} refreshing={movies.isFetching} />
-      )}
+      <FeaturedMovies />
       <RecentlyViewedSection userId={user?.id} />
       <NowPlayingSection afterRecent />
       <ComingSoonSection />

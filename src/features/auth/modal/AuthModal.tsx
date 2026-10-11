@@ -1,9 +1,8 @@
-import { createPortal } from 'react-dom'
+import { Modal, ModalCloseButton } from '@/components/ui/modal/Modal'
 import { LoginForm } from '../forms/login/LoginForm'
 import { RegisterForm } from '../forms/register/RegisterForm'
 import type { AuthMode } from '../model/auth.types'
 import styles from './AuthModal.module.scss'
-import { useAuthDialog } from './hooks/useAuthDialog'
 
 export function AuthModal({
   mode,
@@ -19,28 +18,13 @@ export function AuthModal({
   onClose: () => void
 }) {
   const registering = mode === 'register'
-  const dialog = useAuthDialog(open)
-  return createPortal(
-    <dialog
-      ref={dialog}
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
       className={`${styles.dialog} ${registering ? styles.register : ''}`}
-      aria-labelledby="auth-title"
-      aria-describedby="auth-description"
-      onCancel={(event) => {
-        event.preventDefault()
-        onClose()
-      }}
-      onClick={(event) => {
-        if (event.target !== event.currentTarget) return
-        const bounds = event.currentTarget.getBoundingClientRect()
-        if (
-          event.clientX < bounds.left ||
-          event.clientX > bounds.right ||
-          event.clientY < bounds.top ||
-          event.clientY > bounds.bottom
-        )
-          onClose()
-      }}
+      labelledBy="auth-title"
+      describedBy="auth-description"
     >
       <div className={styles.heading}>
         <div>
@@ -49,13 +33,11 @@ export function AuthModal({
             {registering ? 'Welcome to Kino XII' : 'Welcome back to Kino XII'}
           </p>
         </div>
-        <button
-          type="button"
-          aria-label={registering ? 'Close sign up' : 'Close login'}
-          onClick={onClose}
-        >
-          <img src="/assets/kino/close.svg" alt="" />
-        </button>
+        <ModalCloseButton
+          icon
+          label={registering ? 'Close sign up' : 'Close login'}
+          onClose={onClose}
+        />
       </div>
       {registering ? (
         <RegisterForm
@@ -66,10 +48,7 @@ export function AuthModal({
       ) : (
         <LoginForm key={`login-${instance}`} active={open} onSwitch={() => onSwitch('register')} />
       )}
-      <button type="button" className={styles.close} onClick={onClose}>
-        Close
-      </button>
-    </dialog>,
-    document.body,
+      <ModalCloseButton className={styles.close} onClose={onClose} />
+    </Modal>
   )
 }

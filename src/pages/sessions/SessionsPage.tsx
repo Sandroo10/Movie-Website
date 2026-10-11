@@ -20,15 +20,60 @@ export function SessionsPage() {
   const { filters, change, clear } = useSessionFilters(options.data)
   const query = useSessions(filters, Boolean(options.data))
   const { select: selectSession, message } = useSessionSelection()
-  return (
-    <main className={styles.page}>
-      <header className={styles.heading}>
-        <div>
-          <h1>Sessions</h1>
-          <p>Browse showtimes across all venues</p>
+  function renderSessionResults() {
+    if (query.isPending) return <SessionsSkeleton />
+    if (query.isError) {
+      return (
+        <FeedbackState
+          className={styles.state}
+          error
+          title="Unable to load sessions"
+          message={query.error.message}
+          onAction={() => void query.refetch()}
+        />
+      )
+    }
+    if (!query.data?.data.length) {
+      return (
+        <FeedbackState
+          className={styles.state}
+          title="No sessions found"
+          message="Try another date or clear your filters."
+          onAction={clear}
+          actionLabel="Clear All Filters"
+        >
+          {filters.page > 1 && (
+            <button type="button" onClick={() => change({ page: 1 })}>
+              Return to page 1
+            </button>
+          )}
+        </FeedbackState>
+      )
+    }
+    return (
+      <>
+        <div className={styles.groups}>
+          {query.data.data.map((group) => (
+            <SessionMovieGroup
+              key={group.movie.id}
+              group={group}
+              age={user?.age}
+              onSelect={selectSession}
+            />
+          ))}
         </div>
-      </header>
-      {options.isPending ? (
+        <SessionsPagination
+          current={query.data.meta.currentPage}
+          last={query.data.meta.lastPage}
+          onChange={(page) => change({ page })}
+        />
+      </>
+    )
+  }
+
+  function renderSessionsLayout() {
+    if (options.isPending) {
+      return (
         <div className={styles.layout}>
           <SessionFiltersSkeleton />
           <div className={styles.results}>
@@ -39,7 +84,10 @@ export function SessionsPage() {
             <SessionsSkeleton />
           </div>
         </div>
-      ) : options.isError ? (
+      )
+    }
+    if (options.isError) {
+      return (
         <FeedbackState
           className={styles.state}
           error
@@ -47,77 +95,48 @@ export function SessionsPage() {
           message={options.error.message}
           onAction={() => void options.refetch()}
         />
-      ) : (
-        <div className={styles.layout}>
-          <SessionFilters
-            options={options.data!}
-            filters={filters}
-            onChange={change}
-            onClear={clear}
+      )
+    }
+    return (
+      <div className={styles.layout}>
+        <SessionFilters
+          options={options.data}
+          filters={filters}
+          onChange={change}
+          onClear={clear}
+        />
+        <section
+          className={styles.results}
+          aria-label="Session results"
+          aria-busy={query.isFetching}
+        >
+          {message && <p role="alert">{message}</p>}
+          <SessionsToolbar
+            options={options.data}
+            sort={filters.sort}
+            total={query.data?.meta.totalSessions}
+            onSort={(sort) => change({ sort })}
           />
-          <section
-            className={styles.results}
-            aria-label="Session results"
-            aria-busy={query.isFetching}
-          >
-            {message && <p role="alert">{message}</p>}
-            <SessionsToolbar
-              options={options.data!}
-              sort={filters.sort}
-              total={query.data?.meta.totalSessions}
-              onSort={(sort) => change({ sort })}
-            />
-            {query.isPending ? (
-              <SessionsSkeleton />
-            ) : query.isError ? (
-              <FeedbackState
-                className={styles.state}
-                error
-                title="Unable to load sessions"
-                message={query.error.message}
-                onAction={() => void query.refetch()}
-              />
-            ) : !query.data?.data.length ? (
-              <FeedbackState
-                className={styles.state}
-                title="No sessions found"
-                message="Try another date or clear your filters."
-                onAction={clear}
-                actionLabel="Clear All Filters"
-              >
-                {filters.page > 1 && (
-                  <button type="button" onClick={() => change({ page: 1 })}>
-                    Return to page 1
-                  </button>
-                )}
-              </FeedbackState>
-            ) : (
-              <>
-                <div className={styles.groups}>
-                  {query.data.data.map((group) => (
-                    <SessionMovieGroup
-                      key={group.movie.id}
-                      group={group}
-                      age={user?.age}
-                      onSelect={selectSession}
-                    />
-                  ))}
-                </div>
-                <SessionsPagination
-                  current={query.data.meta.currentPage}
-                  last={query.data.meta.lastPage}
-                  onChange={(page) => change({ page })}
-                />
-              </>
-            )}
-            {query.isFetching && !query.isPending && (
-              <p className={styles.refreshing} role="status">
-                Refreshing sessions…
-              </p>
-            )}
-          </section>
+          {renderSessionResults()}
+          {query.isFetching && !query.isPending && (
+            <p className={styles.refreshing} role="status">
+              Refreshing sessions…
+            </p>
+          )}
+        </section>
+      </div>
+    )
+  }
+
+  return (
+    <main className={styles.page}>
+      <header className={styles.heading}>
+        <div>
+          <h1>Sessions</h1>
+          <p>Browse showtimes across all venues</p>
         </div>
-      )}
+      </header>
+      {renderSessionsLayout()}
     </main>
   )
 }

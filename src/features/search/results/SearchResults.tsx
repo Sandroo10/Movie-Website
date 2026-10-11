@@ -14,7 +14,7 @@ export function SearchResults({
   listId,
   onSelect,
   onRetry,
-}: {
+}: Readonly<{
   query: string
   term: string
   waiting: boolean
@@ -24,7 +24,7 @@ export function SearchResults({
   listId: string
   onSelect: (movie: Movie) => void
   onRetry: () => void
-}) {
+}>) {
   const empty = (icon: string, title: string, description: string) => (
     <div className={styles.searchEmpty}>
       <span className={styles.emptyIcon}>
@@ -35,13 +35,11 @@ export function SearchResults({
       <Link to="/sessions">Browse all sessions</Link>
     </div>
   )
-  return (
-    <div className={styles.searchPanel}>
-      {!query.trim() ? (
-        empty('popcorn', 'What do you want to watch?', 'Search by title')
-      ) : waiting ? (
-        <SearchSkeleton />
-      ) : error ? (
+  function renderStatus() {
+    if (!query.trim()) return empty('popcorn', 'What do you want to watch?', 'Search by title')
+    if (waiting) return <SearchSkeleton />
+    if (error) {
+      return (
         <FeedbackState
           className={styles.searchMessage}
           error
@@ -49,20 +47,29 @@ export function SearchResults({
           onAction={onRetry}
           actionLabel="Try again"
         />
-      ) : !matches.length ? (
-        empty(
-          'search-large',
-          `No results for “${term}”`,
-          'Check the spelling or try another film or live event.',
-        )
-      ) : (
-        <div className={styles.searchHeading}>
-          <strong>FILMS &amp; EVENTS</strong>
-          <span>
-            {matches.length} {matches.length === 1 ? 'result' : 'results'}
-          </span>
-        </div>
-      )}
+      )
+    }
+    if (!matches.length) {
+      return empty(
+        'search-large',
+        `No results for “${term}”`,
+        'Check the spelling or try another film or live event.',
+      )
+    }
+    return (
+      <div className={styles.searchHeading}>
+        <strong>FILMS &amp; EVENTS</strong>
+        <span>
+          {matches.length} {matches.length === 1 ? 'result' : 'results'}
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles.searchPanel}>
+      {renderStatus()}
+      {/* Rich combobox results use listbox/options with keyboard navigation via aria-activedescendant. */}
       <ul
         id={listId}
         role="listbox"

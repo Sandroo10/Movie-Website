@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { User } from '@/features/auth/model/auth.types'
 import { useAuth } from '@/features/auth/session/auth-context'
 import type { Session } from '../model/session.types'
-import { hasSessionStarted } from './useSessionStarted'
+import { bookingEligibility } from '@/features/booking/model/booking-eligibility'
 import { useProfileCompletion } from '@/features/profile/modal/profile-completion-context'
 
 export function useSessionSelection() {
@@ -12,39 +12,23 @@ export function useSessionSelection() {
   const { requestCompletion } = useProfileCompletion()
   const [message, setMessage] = useState<string | null>(null)
   function select(session: Session) {
-    if (hasSessionStarted(session.startsAt)) {
-      setMessage('Session started')
-      return
-    }
-    if (session.isSoldOut) return
     setMessage(null)
     const destination = `/movies/${encodeURIComponent(session.movie.slug)}?session=${session.id}`
-    function continueSelection(account: User) {
-      if (hasSessionStarted(session.startsAt)) {
-        setMessage('Session started')
+    function continueSelection(account: User | null) {
+      const eligibility = bookingEligibility(account, session)
+      if (!eligibility.allowed) {
+        if (eligibility.reason === 'login')
+          openLogin((_token, signedIn) => {
+            continueSelection(signedIn)
+            return Promise.resolve()
+          })
+        else if (eligibility.reason === 'profile' && account) requestCompletion(session, account.id)
+        else setMessage(eligibility.message)
         return
       }
-      if (account.age != null && account.age < session.movie.ageRating.minAge) {
-        setMessage(
-          `This film is rated ${session.movie.ageRating.code}. You cannot buy tickets for it with this account.`,
-        )
-        return
-      }
-      if (!account.profileComplete) {
-        requestCompletion(session, account.id)
-        return
-      }
-      if (account.age == null) {
-        setMessage('Unable to verify your age. Please update your date of birth in your profile.')
-        return
-      }
-      navigate(destination)
+      void navigate(destination)
     }
-    if (user) continueSelection(user)
-    else {
-      // Authentication already returns the authoritative account from the API.
-      openLogin(async (_token, account) => continueSelection(account))
-    }
+    continueSelection(user)
   }
   return { select, message }
 }

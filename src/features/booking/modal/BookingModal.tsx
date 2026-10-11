@@ -1,6 +1,5 @@
-import { createPortal } from 'react-dom'
+import { Modal, ModalCloseButton } from '@/components/ui/modal/Modal'
 import { useEffect } from 'react'
-import { useAuthDialog } from '@/features/auth/modal/hooks/useAuthDialog'
 import { useAuth } from '@/features/auth/session/auth-context'
 import type { Session } from '@/features/sessions/model/session.types'
 import type { FilterOptions } from '@/features/venues/api/filter-options'
@@ -31,7 +30,6 @@ export function BookingModal({
   onPending: (pending: boolean) => void
   onOrder: () => void
 }) {
-  const dialog = useAuthDialog(open)
   const { user } = useAuth()
   const flow = useBookingFlow(session, options, onClose)
   const timer = useHoldTimer(flow.hold?.expiresAt, flow.expireHold)
@@ -39,30 +37,11 @@ export function BookingModal({
   useEffect(() => {
     if (flow.order) onOrder()
   }, [flow.order, onOrder])
-  return createPortal(
-    <dialog
-      ref={dialog}
-      className={styles.dialog}
-      aria-labelledby="booking-title"
-      onCancel={(event) => {
-        event.preventDefault()
-        onClose()
-      }}
-      onClick={(event) => {
-        if (event.target !== event.currentTarget) return
-        const rect = event.currentTarget.getBoundingClientRect()
-        if (
-          event.clientX < rect.left ||
-          event.clientX > rect.right ||
-          event.clientY < rect.top ||
-          event.clientY > rect.bottom
-        )
-          onClose()
-      }}
-    >
-      <button type="button" className={styles.close} aria-label="Close booking" onClick={onClose}>
-        ×
-      </button>
+  return (
+    <Modal open={open} onClose={onClose} className={styles.dialog} labelledBy="booking-title">
+      <ModalCloseButton className={styles.close} label="Close booking" onClose={onClose}>
+        {'\u00d7'}
+      </ModalCloseButton>
       {flow.order ? (
         <BookingConfirmation order={flow.order} onClose={onClose} />
       ) : (
@@ -98,12 +77,12 @@ export function BookingModal({
           <div className={styles.layout}>
             <div className={styles.main}>
               <div className={styles.progress}>
-                <span aria-current={!flow.checkout ? 'step' : undefined}>SEATS</span>
-                <span aria-current={flow.checkout ? 'step' : undefined}>CHECKOUT</span>
+                <span aria-current={flow.step === 'seats' ? 'step' : undefined}>SEATS</span>
+                <span aria-current={flow.step === 'checkout' ? 'step' : undefined}>CHECKOUT</span>
               </div>
               {flow.pending && (
                 <p role="status" className={styles.warning}>
-                  {flow.operation === 'payment'
+                  {flow.requestStatus === 'paying'
                     ? 'Your payment request is processing. Its result will appear even if you close this window.'
                     : 'Holding your selected seats…'}
                 </p>
@@ -114,7 +93,7 @@ export function BookingModal({
                   onAction={onClose}
                   actionLabel="Close"
                 />
-              ) : flow.checkout && flow.hold && user ? (
+              ) : flow.step === 'checkout' && flow.hold && user ? (
                 <CheckoutForm
                   user={user}
                   pending={flow.pending}
@@ -144,7 +123,7 @@ export function BookingModal({
                 )
               )}
             </div>
-            {flow.started ? null : flow.checkout && flow.hold ? (
+            {flow.started ? null : flow.step === 'checkout' && flow.hold ? (
               <OrderSummary session={session} hold={flow.hold} />
             ) : (
               <SeatSummary
@@ -161,12 +140,9 @@ export function BookingModal({
               />
             )}
           </div>
-          <button type="button" className={styles.closeText} onClick={onClose}>
-            Close
-          </button>
+          <ModalCloseButton className={styles.closeText} onClose={onClose} />
         </>
       )}
-    </dialog>,
-    document.body,
+    </Modal>
   )
 }
